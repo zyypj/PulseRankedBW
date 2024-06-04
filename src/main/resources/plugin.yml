@@ -1,0 +1,16 @@
+name: PulseRankedBW
+version: '${project.version}'
+main: br.com.pulse.ranked.Main
+softdepend: [BedWars2023, PlaceholderAPI]
+commands:
+  joinqueue:
+    description: Entrar em uma fila
+    aliases: [joinfila, entrarfila]
+  leavequeue:
+    description: Sair de uma fila
+    aliases: [leavefila, sairfila]
+  elo:
+    description: Sobre elo
+  rank:
+    description: Ver rank
+    aliases: [ranqueamento]
