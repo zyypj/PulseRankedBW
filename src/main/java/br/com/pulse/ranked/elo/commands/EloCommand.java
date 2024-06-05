@@ -1,7 +1,6 @@
 package br.com.pulse.ranked.elo.commands;
 
 import br.com.pulse.ranked.elo.EloManager;
-import br.com.pulse.ranked.misc.Utility;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
