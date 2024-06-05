@@ -1,6 +1,7 @@
 package br.com.pulse.ranked.elo.commands;
 
 import br.com.pulse.ranked.elo.EloManager;
+import br.com.pulse.ranked.misc.Utility;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -127,7 +128,7 @@ public class EloCommand implements CommandExecutor {
             Player target = Bukkit.getPlayer(args[1]);
 
             if (target == null || !target.isOnline()) {
-                player.sendMessage("§cJogador não encontrado!");
+                player.sendMessage("§cJogador não encontrado");
                 return true;
             }
 
@@ -146,7 +147,7 @@ public class EloCommand implements CommandExecutor {
                 sender.sendMessage("§7O Elo 1v1 de §l" + target.getName() + " §7foi definido para §5" + newElo);
                 return true;
             } else {
-                sender.sendMessage("§cUse: /elo <jogador> <solo/duplas/1v1> <número>");
+                sender.sendMessage("§cUse: /elo set <1v1/solo/duplas> <número>");
                 return true;
             }
 

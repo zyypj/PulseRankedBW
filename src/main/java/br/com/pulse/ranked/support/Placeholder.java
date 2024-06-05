@@ -51,7 +51,7 @@ public class Placeholder extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getIdentifier() {
-        return "bw1058ranked";
+        return "bw2023ranked";
     }
 
     @Override

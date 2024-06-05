@@ -71,6 +71,8 @@ public final class Main extends JavaPlugin {
             new Placeholder(this, eloManager).register();
         }
 
+        eloManager.savePlayerData();
+
         Bukkit.getScheduler().runTaskLater(this, () -> {
             getLogger().info("");
             getLogger().info("PulseRanked enabled");

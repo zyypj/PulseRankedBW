@@ -15,7 +15,7 @@ public class BW2023 extends Addon {
 
     @Override
     public String getAuthor() {
-        return Main.getInstance().getDescription().getAuthors().get(0);
+        return "tadeu";
     }
 
     @Override
@@ -41,10 +41,16 @@ public class BW2023 extends Addon {
     @Override
     public void load() {
         Bukkit.getPluginManager().enablePlugin(Main.getInstance());
+        loadMsg();
     }
 
     @Override
     public void unload() {
         Bukkit.getPluginManager().disablePlugin(Main.getInstance());
+    }
+
+    public void loadMsg() {
+        Bukkit.getConsoleSender().sendMessage("&eLoading messages...");
+        Bukkit.getConsoleSender().sendMessage("&eMessages load.");
     }
 }
