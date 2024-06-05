@@ -68,7 +68,7 @@ public class EloManager implements EloAPI {
     }
 
     public void savePlayerData() {
-        File dataFolder = new File(Bukkit.getPluginManager().getPlugin("BedWars1058").getDataFolder(), "Addons/Ranked");
+        File dataFolder = new File(Bukkit.getPluginManager().getPlugin("BedWars2023").getDataFolder(), "Addons/Ranked");
         if (!dataFolder.exists()) {
             dataFolder.mkdirs();
         }
