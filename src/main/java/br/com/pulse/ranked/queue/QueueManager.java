@@ -71,13 +71,6 @@ public class QueueManager implements QueueAPI {
 
     private void startGame(List<Player> players, String gameType) {
         for (Player player : players) {
-            leaveQueue(player);
-            if (bedwarsAPI.getArenaUtil().isPlaying(player)) {
-                player.sendMessage("§cVocê já está jogando!");
-                player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
-                return;
-            }
-
             player.sendMessage("§7Partida Encontrada: §5" + gameType);
             player.sendMessage("§7Conectando...");
             player.sendMessage("");

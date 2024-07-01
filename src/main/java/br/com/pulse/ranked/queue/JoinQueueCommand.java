@@ -120,7 +120,7 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
                 int eloSolo = eloManager.getElo(playerUUID, "rankedsolo");
                 int eloDuplas = eloManager.getElo(playerUUID, "rankedduplas");
                 int elo1v1 = eloManager.getElo(playerUUID, "ranked1v1");
-                int elo4v4 = eloManager.getElo(playerUUID, "ranked4v4");
+                int elo4v4 = eloManager.getElo(playerUUID, "ranked4s");
                 int eloGeral = (eloSolo + eloDuplas + elo1v1 + elo4v4) / 4;
                 String rank = eloManager.getRank(eloGeral);
 

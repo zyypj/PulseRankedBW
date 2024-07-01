@@ -28,7 +28,7 @@ public class RankCommand implements CommandExecutor {
             UUID playerUUID = player.getUniqueId();
             int eloSolo = eloManager.getElo(playerUUID, "rankedsolo");
             int elo1v1 = eloManager.getElo(playerUUID, "ranked1v1");
-            int elo4v4 = eloManager.getElo(playerUUID, "ranked4v4");
+            int elo4v4 = eloManager.getElo(playerUUID, "ranked4s");
             int eloDuplas = eloManager.getElo(playerUUID, "rankedduplas");
             int eloSoma = (eloSolo + elo1v1 + elo4v4 + eloDuplas) / 4;
             player.sendMessage("§7Seu Rank é: §5" + eloManager.getRank(eloSoma));
@@ -39,7 +39,7 @@ public class RankCommand implements CommandExecutor {
             UUID targetUUID = target.getUniqueId();
             int eloSolo = eloManager.getElo(targetUUID, "rankedsolo");
             int elo1v1 = eloManager.getElo(targetUUID, "ranked1v1");
-            int elo4v4 = eloManager.getElo(targetUUID, "ranked4v4");
+            int elo4v4 = eloManager.getElo(targetUUID, "ranked4s");
             int eloDuplas = eloManager.getElo(targetUUID, "rankedduplas");
             int eloSoma = (eloSolo + elo1v1 + elo4v4 + eloDuplas) / 4;
             player.sendMessage("§7O Rank de §l" + target.getName() + " §7: §5" + eloManager.getRank(eloSoma));

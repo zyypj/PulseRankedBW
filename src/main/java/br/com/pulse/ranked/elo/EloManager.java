@@ -95,8 +95,8 @@ public class EloManager implements EloAPI {
                 if (playerData.contains(uuidString + ".ranked1v1")) {
                     elo1v1 = playerData.getInt(uuidString + ".ranked1v1");
                 }
-                if (playerData.contains(uuidString + ".ranked4v4")) {
-                    elo4v4 = playerData.getInt(uuidString + ".ranked4v4");
+                if (playerData.contains(uuidString + ".ranked4s")) {
+                    elo4v4 = playerData.getInt(uuidString + ".ranked4s");
                 }
                 if (playerData.contains(uuidString + ".rankedgeral")) {
                     eloGeral = playerData.getInt(uuidString + ".rankedgeral");
@@ -109,7 +109,7 @@ public class EloManager implements EloAPI {
                 config.set(uuidString + ".rankedsolo", eloSolo);
                 config.set(uuidString + ".rankedduplas", eloDuplas);
                 config.set(uuidString + ".ranked1v1", elo1v1);
-                config.set(uuidString + ".ranked4v4", elo4v4);
+                config.set(uuidString + ".ranked4s", elo4v4);
                 config.set(uuidString + ".mvp", mvpCount);
             }
             config.save(playerDataFile);

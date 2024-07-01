@@ -2,6 +2,7 @@ package br.com.pulse.ranked.elo;
 
 import br.com.pulse.ranked.Main;
 import com.tomkeuper.bedwars.api.BedWars;
+import com.tomkeuper.bedwars.api.arena.generator.IGenerator;
 import com.tomkeuper.bedwars.api.arena.shop.ICategoryContent;
 import com.tomkeuper.bedwars.api.arena.team.ITeam;
 import com.tomkeuper.bedwars.api.events.gameplay.GameEndEvent;
@@ -109,30 +110,44 @@ public class EloListener implements Listener {
         ICategoryContent categoryContent = e.getCategoryContent();
         String identifier = categoryContent.getIdentifier();
         // Permanently blocked items
-        if (group.equalsIgnoreCase("RankedSolo") || group.equalsIgnoreCase("RankedDuplas") || group.equalsIgnoreCase("Ranked1v1") || group.equalsIgnoreCase("Ranked4v4")) {
-            if (identifier.equals("utility-category.category-content.fireball") ||
-                    identifier.equals("ranged-category.category-content.bow1") ||
+        boolean b = group.equalsIgnoreCase("RankedSolo") || group.equalsIgnoreCase("RankedDuplas") || group.equalsIgnoreCase("Ranked1v1") || group.equalsIgnoreCase("Ranked4s");
+        if (b) {
+            if (identifier.equals("ranged-category.category-content.bow1") ||
+                    identifier.equals("ranged-category.category-content.arrow") ||
                     identifier.equals("ranged-category.category-content.bow2") ||
                     identifier.equals("ranged-category.category-content.bow3") ||
-                    identifier.equals("ranged-category.category-content.arrow") ||
-                    identifier.equals("potions-category.category-content.jump-potion") ||
-                    identifier.equals("potions-category.category-content.speed-potion") ||
-                    identifier.equals("blocks-category.category-content.ladder")) {
+                    identifier.equals("utility-category.category-content.ender-pearl") ||
+                    identifier.equals("shop-specials.tower") ||
+                    identifier.equals("blocks-category.category-content.obsidian") ||
+                    identifier.equals("utility-category.category-content.tower")) {
                 player.sendMessage("§cItem bloqueado nos modos ranqueados!");
                 e.setCancelled(true);
                 return;
             }
         }
         // Temporarily blocked items
-        if (group.equalsIgnoreCase("Ranked1v1") || group.equalsIgnoreCase("Ranked4v4")) {
-            if (!(teamA.isBedDestroyed()) || !(teamB.isBedDestroyed())) {
+        if (group.equalsIgnoreCase("Ranked1v1") || group.equalsIgnoreCase("Ranked4s")) {
+            if (!teamB.isBedDestroyed() || !teamA.isBedDestroyed()) {
                 if (identifier.equals("potions-category.category-content.invisibility") ||
+                        identifier.equals("potions-category.category-content.jump-potion") ||
+                        identifier.equals("potions-category.category-content.speed-potion") ||
                         identifier.equals("utility-category.category-content.tnt") ||
-                        identifier.equals("utility-category.category-content.tower") ||
-                        identifier.equals("utility-category.category-content.ender-pearl") ||
+                        identifier.equals("utility-category.category-content.water-bucket") ||
+                        identifier.equals("shop-specials.iron-golem") ||
+                        identifier.equals("utility-category.category-content.bedbug") ||
                         identifier.equals("melee-category.category-content.stick") ||
-                        identifier.equals("utility-category.category-content.water-bucket")) {
+                        identifier.equals("utility-category.category-content.dream-defender")) {
                     player.sendMessage("§cItem bloqueado até alguma cama for quebrada!");
+                    e.setCancelled(true);
+                }
+            }
+        }
+
+        if (b) {
+            if (e.getArena().getUpgradeDiamondsCount() != 2) {
+                Bukkit.getConsoleSender().sendMessage(String.valueOf(e.getArena().getUpgradeDiamondsCount()));
+                if (identifier.equals("utility-category.category-content.bridge-egg")) {
+                    player.sendMessage("§cItem bloqueado até o Diamante 3!");
                     e.setCancelled(true);
                 }
             }

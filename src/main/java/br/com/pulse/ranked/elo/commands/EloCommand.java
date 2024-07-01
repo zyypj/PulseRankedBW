@@ -27,7 +27,7 @@ public class EloCommand implements CommandExecutor {
         int eloSolo = eloManager.getElo(playerUUID, "rankedsolo");
         int eloDuplas = eloManager.getElo(playerUUID, "rankedduplas");
         int elo1v1 = eloManager.getElo(playerUUID, "ranked1v1");
-        int elo4v4 = eloManager.getElo(playerUUID, "ranked4v4");
+        int elo4v4 = eloManager.getElo(playerUUID, "ranked4s");
         int eloGeral = (eloSolo + eloDuplas + elo1v1 + elo4v4) / 4;
         String rank = eloManager.getRank(eloGeral);
 
@@ -83,7 +83,7 @@ public class EloCommand implements CommandExecutor {
             int eloSoloT = eloManager.getElo(targetUUID, "rankedsolo");
             int eloDuplasT = eloManager.getElo(targetUUID, "rankedduplas");
             int elo1v1T = eloManager.getElo(targetUUID, "ranked1v1");
-            int elo4v4T = eloManager.getElo(targetUUID, "ranked4v4");
+            int elo4v4T = eloManager.getElo(targetUUID, "ranked4s");
             int eloGeralT = (eloSoloT + eloDuplasT + elo1v1T + elo4v4T) / 4;
 
             if (args[1].equalsIgnoreCase("solo")) {

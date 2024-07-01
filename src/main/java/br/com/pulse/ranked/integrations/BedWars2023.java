@@ -46,7 +46,6 @@ public class BedWars2023 implements IIntegration{
 
     @Override
     public void disable() {
-
     }
 
 }
