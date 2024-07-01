@@ -73,8 +73,8 @@ public class MVPListener implements Listener {
                     eloManager.savePlayerData();
 
                 } else {
-                    player.sendMessage("§cO MVP dessa partida não foi definido!");
-                    player.sendMessage("§cO MVP dessa partida não foi definido!");
+                    player.sendMessage("§c§lO MVP dessa partida não foi definido!");
+                    player.sendMessage("§c§lO MVP dessa partida não foi definido!");
                 }
             }
             mvpManager.reset(arena);
