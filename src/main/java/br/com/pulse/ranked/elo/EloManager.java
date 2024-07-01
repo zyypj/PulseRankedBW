@@ -5,6 +5,7 @@ import br.com.pulse.ranked.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +38,10 @@ public class EloManager implements EloAPI {
 
         setElo(playerUUID, type, newElo);
         savePlayerData();
+    }
+
+    public int getMvp(Player player) {
+        return getPlayerData().getInt(player.getUniqueId() + ".mvp", 0);
     }
 
     public String getRank(int elo) {

@@ -100,8 +100,8 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
         RankedDuplasLore.add("§7Elo Duplas: §5" + eloManager.getElo(player.getUniqueId(), "rankedduplas"));
         RankedDuplasLore.add("");
         RankedDuplasLore.add("§eClique para entrar na fila");
-        RankedSoloMeta.setLore(RankedDuplasLore);
-        RankedSoloItem.setItemMeta(RankedSoloMeta);
+        RankedDuplasMeta.setLore(RankedDuplasLore);
+        RankedDuplasItem.setItemMeta(RankedDuplasMeta);
         joinMenu.setItem(41, RankedDuplasItem);
 
         player.openInventory(joinMenu);
