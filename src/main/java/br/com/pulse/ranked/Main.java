@@ -8,7 +8,7 @@ import br.com.pulse.ranked.integrations.IIntegration;
 import br.com.pulse.ranked.misc.RankCommand;
 import br.com.pulse.ranked.misc.fourS.ForgeManager;
 import br.com.pulse.ranked.misc.listeners.AntiLadder;
-import br.com.pulse.ranked.misc.listeners.FireballListener;
+import br.com.pulse.ranked.misc.mvp.MVPCommand;
 import br.com.pulse.ranked.misc.mvp.MVPListener;
 import br.com.pulse.ranked.misc.mvp.MVPManager;
 import br.com.pulse.ranked.queue.JoinQueueCommand;
@@ -36,7 +36,6 @@ public final class Main extends JavaPlugin {
     public static Main plugin;
     private static EloManager eloManager;
     private static QueueManager queueManager;
-    private MVPManager mvpManager;
 
     public static VersionSupport nms;
     boolean serverSoftwareSupport = true;
@@ -107,8 +106,8 @@ public final class Main extends JavaPlugin {
         FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerDataFile);
 
         queueManager = new QueueManager(this, eloManager);
-        eloManager = new EloManager(this, playerData);
-        mvpManager = new MVPManager();
+        eloManager = new EloManager(playerData);
+        MVPManager mvpManager = new MVPManager();
 
         registerEvents(new JoinQueueCommand(queueManager, eloManager), new EloListener(eloManager, this, playerData),
         new AntiLadder(), new ForgeManager(this), new MVPListener(this, mvpManager, eloManager));
@@ -117,6 +116,7 @@ public final class Main extends JavaPlugin {
         getCommand("leavequeue").setExecutor(new LeaveQueueCommand(queueManager));
         getCommand("rank").setExecutor(new RankCommand(eloManager));
         getCommand("elo").setExecutor(new EloCommand(eloManager));
+        getCommand("mvp").setExecutor(new MVPCommand(eloManager));
 
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             Bukkit.getScheduler().runTaskLater(this, () ->

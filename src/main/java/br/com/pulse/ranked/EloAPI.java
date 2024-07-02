@@ -1,5 +1,7 @@
 package br.com.pulse.ranked;
 
+import org.bukkit.entity.Player;
+
 import java.util.UUID;
 
 public interface EloAPI {
@@ -11,5 +13,7 @@ public interface EloAPI {
     void addElo(UUID playerUUID, int eloChange, String type);
 
     String getRank(int elo);
+
+    int getMvp(Player player);
 
 }

@@ -15,7 +15,7 @@ public class EloManager implements EloAPI {
 
     private final FileConfiguration playerData;
 
-    public EloManager(Main plugin, FileConfiguration playerData) {
+    public EloManager(FileConfiguration playerData) {
         this.playerData = playerData;
     }
 
