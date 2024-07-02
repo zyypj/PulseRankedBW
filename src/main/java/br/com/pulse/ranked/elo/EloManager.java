@@ -3,6 +3,7 @@ package br.com.pulse.ranked.elo;
 import br.com.pulse.ranked.EloAPI;
 import br.com.pulse.ranked.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -43,6 +44,7 @@ public class EloManager implements EloAPI {
             Player player = Bukkit.getPlayer(playerUUID);
             player.sendMessage("§a§lVocê evoluiu de Rank!");
             player.sendMessage("§aSeu novo rank é: " + newRank);
+            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
         }
 
         setElo(playerUUID, type, newElo);
