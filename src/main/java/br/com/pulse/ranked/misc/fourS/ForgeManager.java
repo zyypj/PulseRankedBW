@@ -29,7 +29,7 @@ public class ForgeManager implements Listener {
             GameState gameState = e.getNewState();
 
             if (gameState.name().equalsIgnoreCase("playing")) {
-                Bukkit.getConsoleSender().sendMessage("[ForgeManager] >> Debug (playing detected)");
+                Main.debug("(playing detected)");
                 IArena arena = e.getArena();
                 ITeam verde = arena.getTeam("Verde");
 

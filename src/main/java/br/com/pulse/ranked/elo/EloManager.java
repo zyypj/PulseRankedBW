@@ -36,6 +36,15 @@ public class EloManager implements EloAPI {
             newElo = 0; // Elo não pode ser negativo
         }
 
+        String oldRank = getRank(currentElo);
+        String newRank = getRank(newElo);
+
+        if (!oldRank.equalsIgnoreCase(newRank)) {
+            Player player = Bukkit.getPlayer(playerUUID);
+            player.sendMessage("§a§lVocê evoluiu de Rank!");
+            player.sendMessage("§aSeu novo rank é: " + newRank);
+        }
+
         setElo(playerUUID, type, newElo);
         savePlayerData();
     }

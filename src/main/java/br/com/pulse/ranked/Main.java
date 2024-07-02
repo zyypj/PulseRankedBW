@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
-public final class Main extends JavaPlugin {
+public class Main extends JavaPlugin {
 
     public static BedWars bedWars;
     public static Main plugin;
@@ -87,9 +87,11 @@ public final class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        populateIntegrations(new BedWars2023(this, bedWars = Bukkit.getServicesManager().getRegistration(BedWars.class).getProvider()));
-
         Plugin bedWarsPlugin = Bukkit.getPluginManager().getPlugin("BedWars2023");
+
+        if (!bedWarsPlugin.isEnabled()) {
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
 
         File dataFolder = new File(bedWarsPlugin.getDataFolder(), "Addons/Ranked");
         if (!dataFolder.exists()) {
@@ -139,18 +141,6 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         eloManager.savePlayerData();
-    }
-
-    private void populateIntegrations(IIntegration... integrations) {
-        for (IIntegration integration : integrations) {
-            if (!integration.enable()) {
-                throw new NotFoundException("Plugin could not be enabled as on or more of the dependencies could not be hooked.");
-            }
-        }
-    }
-
-    public boolean isBedWarsInstalled(){
-        return Bukkit.getPluginManager().getPlugin("BedWars2023") != null;
     }
 
     public static void registerEvents(Listener... listeners) {
