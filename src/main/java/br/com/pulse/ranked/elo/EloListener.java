@@ -2,7 +2,6 @@ package br.com.pulse.ranked.elo;
 
 import br.com.pulse.ranked.Main;
 import com.tomkeuper.bedwars.api.BedWars;
-import com.tomkeuper.bedwars.api.arena.generator.IGenerator;
 import com.tomkeuper.bedwars.api.arena.shop.ICategoryContent;
 import com.tomkeuper.bedwars.api.arena.team.ITeam;
 import com.tomkeuper.bedwars.api.events.gameplay.GameEndEvent;
@@ -18,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -90,6 +90,7 @@ public class EloListener implements Listener {
     public void gameEnd(GameEndEvent e) {
         String group = e.getArena().getGroup();
         ITeam winnerTeam = e.getTeamWinner();
+        List<UUID> loserTeam = e.getLosers();
         if (group.equalsIgnoreCase("RankedSolo") || group.equalsIgnoreCase("RankedDuplas") || group.equalsIgnoreCase("Ranked1v1")) {
             for (Player winner : winnerTeam.getMembers()) {
                 Random random = new Random();
@@ -97,6 +98,14 @@ public class EloListener implements Listener {
                 eloManager.addElo(winner.getUniqueId(), winnerEloIncrease, group.toLowerCase());
                 winner.sendMessage("§c+" + winnerEloIncrease + " Ranked Elo (Vitória)");
                 winner.playSound(winner.getLocation(), Sound.LEVEL_UP, 1, 1);
+            }
+            for (UUID loserUUID : loserTeam) {
+                Player loser = Bukkit.getPlayer(loserUUID);
+                Random random = new Random();
+                int loserEloPerca = random.nextInt(21) + 10; // Gera um número aleatório de 20 a 30
+                eloManager.addElo(loser.getUniqueId(), loserEloPerca, group.toLowerCase());
+                loser.sendMessage("§c-" + -loserEloPerca + " Ranked Elo (Derrota)");
+                loser.playSound(loser.getLocation(), Sound.LEVEL_UP, 1, 1);
             }
         }
     }

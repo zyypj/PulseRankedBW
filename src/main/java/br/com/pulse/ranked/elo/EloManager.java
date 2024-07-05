@@ -1,7 +1,6 @@
 package br.com.pulse.ranked.elo;
 
 import br.com.pulse.ranked.EloAPI;
-import br.com.pulse.ranked.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -40,11 +39,19 @@ public class EloManager implements EloAPI {
         String oldRank = getRank(currentElo);
         String newRank = getRank(newElo);
 
-        if (!oldRank.equalsIgnoreCase(newRank)) {
-            Player player = Bukkit.getPlayer(playerUUID);
-            player.sendMessage("§a§lVocê evoluiu de Rank!");
-            player.sendMessage("§aSeu novo rank é: " + newRank);
-            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+        Player player = Bukkit.getPlayer(playerUUID);
+        if (player != null) {
+            if (!oldRank.equalsIgnoreCase(newRank)) {
+                int oldRankPriority = getRankPriority(oldRank);
+                int newRankPriority = getRankPriority(newRank);
+                if (newRankPriority < oldRankPriority) {
+                    player.sendMessage("§c§lVocê desceu de rank!");
+                } else {
+                    player.sendMessage("§a§lVocê evoluiu de Rank!");
+                }
+                player.sendMessage("§aSeu novo rank é: " + newRank);
+                player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+            }
         }
 
         setElo(playerUUID, type, newElo);
@@ -81,6 +88,24 @@ public class EloManager implements EloAPI {
         } else {
             return "§b[Diamante I]";
         }
+    }
+
+    public int getRankPriority(String rank) {
+        return switch (rank) {
+            case "§4[Bronze III]" -> 1;
+            case "§4[Bronze II]" -> 2;
+            case "§4[Bronze I]" -> 3;
+            case "§8[Prata III]" -> 4;
+            case "§8[Prata II]" -> 5;
+            case "§8[Prata I]" -> 6;
+            case "§6[Ouro III]" -> 7;
+            case "§6[Ouro II]" -> 8;
+            case "§6[Ouro I]" -> 9;
+            case "§b[Diamante III]" -> 10;
+            case "§b[Diamante II]" -> 11;
+            case "§b[Diamante I]" -> 12;
+            default -> Integer.MAX_VALUE;
+        };
     }
 
     public void savePlayerData() {
@@ -138,4 +163,3 @@ public class EloManager implements EloAPI {
         return playerData;
     }
 }
-
