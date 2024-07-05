@@ -23,7 +23,7 @@ public class TeamManager implements Listener {
                 return;
             }
 
-            arena.setStatus(GameState.playing);
+            arena.setStatus(GameState.starting);
         }
     }
 
