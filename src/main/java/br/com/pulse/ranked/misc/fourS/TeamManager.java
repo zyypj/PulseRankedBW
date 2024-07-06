@@ -7,6 +7,7 @@ import com.tomkeuper.bedwars.api.arena.team.ITeam;
 import com.tomkeuper.bedwars.api.arena.team.ITeamAssigner;
 import com.tomkeuper.bedwars.api.events.gameplay.TeamAssignEvent;
 import com.tomkeuper.bedwars.api.events.player.PlayerJoinArenaEvent;
+import com.tomkeuper.bedwars.api.events.server.ArenaEnableEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,22 +20,15 @@ public class TeamManager implements Listener, ITeamAssigner {
     private final LinkedList<ITeam> teams = new LinkedList<>();
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinArenaEvent e) {
-        List<Player> players = e.getArena().getPlayers();
-        IArena arena = e.getArena();
-        if (arena.getGroup().equalsIgnoreCase("Ranked4s")) {
-            if (players.size() != 8) {
-                arena.setStatus(GameState.waiting);
-                return;
-            }
-
-            arena.setStatus(GameState.starting);
+    public void onArenaLoad(ArenaEnableEvent event) {
+        if (event.getArena().getGroup().equalsIgnoreCase("Ranked2v2CM")) {
+            event.getArena().setTeamAssigner(this);
         }
     }
 
-    @EventHandler
-    public void teamAssign(TeamAssignEvent e) {
-        IArena arena = e.getArena();
+    @Override
+    public void assignTeams(IArena arena) {
+        teams.addAll(arena.getTeams());
 
         if (arena.getGroup().equalsIgnoreCase("Ranked2v2CM")) {
 
@@ -65,46 +59,7 @@ public class TeamManager implements Listener, ITeamAssigner {
             for (Player player : player34) {
                 timeC.addPlayers(player);
             }
-
-            return;
         }
-
-        if (arena.getGroup().equalsIgnoreCase("Ranked4s")) {
-
-            List<Player> players = arena.getPlayers();
-
-            ITeam timeV = arena.getTeam("Vermelho");
-            ITeam timeA = arena.getTeam("Azul");
-
-            List<Player> player1234 = players.subList(0, 4);
-            List<Player> player5678 = players.subList(4, 8);
-
-            for (Player player : player1234) {
-                timeV.addPlayers(player);
-            }
-
-            for (Player player : player5678) {
-                timeA.addPlayers(player);
-            }
-
-            ITeam timeVe = arena.getTeam("Verde");
-            if (!timeVe.getMembers().isEmpty()) {
-                for (Player player : timeVe.getMembers()) {
-                    arena.removePlayer(player, false);
-                }
-            }
-
-            ITeam timeAm = arena.getTeam("Amarelo");
-            if (!timeAm.getMembers().isEmpty()) {
-                for (Player player : timeAm.getMembers()) {
-                    arena.removePlayer(player, false);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void assignTeams(IArena arena) {
-        teams.addAll(arena.getTeams());
+        teams.clear();
     }
 }
