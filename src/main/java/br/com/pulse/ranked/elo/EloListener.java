@@ -56,7 +56,10 @@ public class EloListener implements Listener {
         UUID playerUUID = player.getUniqueId();
         if (bedwarsAPI.getArenaUtil().isPlaying(player)) {
             String group = e.getArena().getGroup();
-            if (group.equalsIgnoreCase("RankedSolo") || group.equalsIgnoreCase("RankedDuplas") ||group.equalsIgnoreCase("Ranked1v1")) {
+            if (group.equalsIgnoreCase("RankedSolo")
+                    || group.equalsIgnoreCase("RankedDuplas")
+                    || group.equalsIgnoreCase("Ranked1v1")
+                    || group.equalsIgnoreCase("Ranked2v2CM")) {
                 Random random = new Random();
                 int playerEloIncrease = random.nextInt(13) + 4; // Gera um número aleatório de 4 a 16
                 eloManager.addElo(playerUUID, playerEloIncrease, group.toLowerCase());
@@ -68,18 +71,23 @@ public class EloListener implements Listener {
     @EventHandler
     public void onKill(PlayerKillEvent e) {
         Player killer = e.getKiller();
-        UUID killerUUID = killer.getUniqueId();
-        if (killerUUID != null) {
-            if (bedwarsAPI.getArenaUtil().isPlaying(killer)) {
-                String group = e.getArena().getGroup();
-                if (group.equalsIgnoreCase("RankedSolo") || group.equalsIgnoreCase("RankedDuplas") || group.equalsIgnoreCase("Ranked1v1")) {
-                    if (e.getCause().isFinalKill()) {
-                        Random random = new Random();
-                        int killerEloIncrease = random.nextInt(8) + 1; // Gera um número aleatório de 1 a 8
-                        eloManager.addElo(killerUUID, killerEloIncrease, group.toLowerCase());
-                        killer.sendMessage("§c+" + killerEloIncrease + " Ranked Elo (Kill Final)");
-                        killer.playSound(killer.getLocation(), Sound.LEVEL_UP, 1, 1);
+        if (killer != null) {
+            UUID killerUUID = killer.getUniqueId();
+            if (killerUUID != null) {
+                if (bedwarsAPI.getArenaUtil().isPlaying(killer)) {
+                    String group = e.getArena().getGroup();
+                    if (group.equalsIgnoreCase("RankedSolo")
+                            || group.equalsIgnoreCase("RankedDuplas")
+                            || group.equalsIgnoreCase("Ranked1v1")
+                            || group.equalsIgnoreCase("Ranked2v2CM")) {
+                        if (e.getCause().isFinalKill()) {
+                            Random random = new Random();
+                            int killerEloIncrease = random.nextInt(8) + 1; // Gera um número aleatório de 1 a 8
+                            eloManager.addElo(killerUUID, killerEloIncrease, group.toLowerCase());
+                            killer.sendMessage("§c+" + killerEloIncrease + " Ranked Elo (Kill Final)");
+                            killer.playSound(killer.getLocation(), Sound.LEVEL_UP, 1, 1);
 
+                        }
                     }
                 }
             }
@@ -91,7 +99,10 @@ public class EloListener implements Listener {
         String group = e.getArena().getGroup();
         ITeam winnerTeam = e.getTeamWinner();
         List<UUID> loserTeam = e.getLosers();
-        if (group.equalsIgnoreCase("RankedSolo") || group.equalsIgnoreCase("RankedDuplas") || group.equalsIgnoreCase("Ranked1v1")) {
+        if (group.equalsIgnoreCase("RankedSolo")
+                || group.equalsIgnoreCase("RankedDuplas")
+                || group.equalsIgnoreCase("Ranked1v1")
+                || group.equalsIgnoreCase("Ranked2v2CM")) {
             for (Player winner : winnerTeam.getMembers()) {
                 Random random = new Random();
                 int winnerEloIncrease = random.nextInt(11) + 10; // Gera um número aleatório de 10 a 20
@@ -102,7 +113,7 @@ public class EloListener implements Listener {
             for (UUID loserUUID : loserTeam) {
                 Player loser = Bukkit.getPlayer(loserUUID);
                 Random random = new Random();
-                int loserEloPerca = random.nextInt(21) + 10; // Gera um número aleatório de 20 a 30
+                int loserEloPerca = random.nextInt(11) + 20; // Gera um número aleatório de 20 a 30
                 eloManager.addElo(loser.getUniqueId(), loserEloPerca, group.toLowerCase());
                 loser.sendMessage("§c-" + -loserEloPerca + " Ranked Elo (Derrota)");
                 loser.playSound(loser.getLocation(), Sound.LEVEL_UP, 1, 1);
@@ -119,7 +130,11 @@ public class EloListener implements Listener {
         ICategoryContent categoryContent = e.getCategoryContent();
         String identifier = categoryContent.getIdentifier();
         // Permanently blocked items
-        boolean b = group.equalsIgnoreCase("RankedSolo") || group.equalsIgnoreCase("RankedDuplas") || group.equalsIgnoreCase("Ranked1v1") || group.equalsIgnoreCase("Ranked4s");
+        boolean b = group.equalsIgnoreCase("RankedSolo")
+                || group.equalsIgnoreCase("RankedDuplas")
+                || group.equalsIgnoreCase("Ranked1v1")
+                || group.equalsIgnoreCase("Ranked4s")
+                || group.equalsIgnoreCase("Ranked2v2CM");
         if (b) {
             if (identifier.equals("ranged-category.category-content.bow1") ||
                     identifier.equals("ranged-category.category-content.arrow") ||
@@ -153,8 +168,8 @@ public class EloListener implements Listener {
         }
 
         if (b) {
+            Bukkit.getConsoleSender().sendMessage(String.valueOf(e.getArena().getUpgradeDiamondsCount()));
             if (e.getArena().getUpgradeDiamondsCount() != 2) {
-                Bukkit.getConsoleSender().sendMessage(String.valueOf(e.getArena().getUpgradeDiamondsCount()));
                 if (identifier.equals("utility-category.category-content.bridge-egg")) {
                     player.sendMessage("§cItem bloqueado até o Diamante 3!");
                     e.setCancelled(true);

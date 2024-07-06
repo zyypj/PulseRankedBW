@@ -4,6 +4,7 @@ import br.com.pulse.ranked.Main;
 import br.com.pulse.ranked.QueueAPI;
 import br.com.pulse.ranked.elo.EloManager;
 import com.tomkeuper.bedwars.api.BedWars;
+import com.tomkeuper.bedwars.api.arena.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -82,6 +83,8 @@ public class QueueManager implements QueueAPI {
                     player.sendMessage("§7Modo: §5" + gameType);
                     player.sendMessage("");
                     player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
+                    Bukkit.getScheduler().runTaskLater(plugin, () ->
+                            bedwarsAPI.getArenaUtil().getArenaByPlayer(player).getStartingTask().setCountdown(5), 20L);
                 } else {
                     player.sendMessage("");
                     player.sendMessage("§cNão foi possível entrar na partida!");

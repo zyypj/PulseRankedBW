@@ -75,7 +75,8 @@ public class FireballListener implements Listener {
             IArena arena = Arena.getArenaByPlayer(player);
             String group = arena.getGroup();
             if (group.equalsIgnoreCase("RankedSolo") || group.equalsIgnoreCase("RankedDuplas")
-                    || group.equalsIgnoreCase("Ranked1v1") || group.equalsIgnoreCase("Ranked4v4")) {
+                    || group.equalsIgnoreCase("Ranked1v1") || group.equalsIgnoreCase("Ranked4v4")
+                    || group.equalsIgnoreCase("Ranked2v2CM")) {
 
                 e.setCancelled(true);
 

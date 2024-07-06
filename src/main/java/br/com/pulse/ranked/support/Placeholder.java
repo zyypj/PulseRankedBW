@@ -23,6 +23,8 @@ public class Placeholder extends PlaceholderExpansion {
         }
 
         switch (identifier.toLowerCase()) {
+            case "bwelo_2v2":
+                return String.valueOf(eloManager.getElo(player.getUniqueId(), "ranked2v2cm"));
             case "mvp":
                 return String.valueOf(eloManager.getMvp(player));
             case "bwelo_1v1":
@@ -36,15 +38,15 @@ public class Placeholder extends PlaceholderExpansion {
             case "bwelo_geral":
                 int elo1v1 = eloManager.getElo(player.getUniqueId(), "ranked1v1");
                 int elo4v4 = eloManager.getElo(player.getUniqueId(), "ranked4s");
+                int elo2v2 = eloManager.getElo(player.getUniqueId(), "ranked2v2cm");
                 int eloSolo = eloManager.getElo(player.getUniqueId(), "rankedsolo");
                 int eloDuplas = eloManager.getElo(player.getUniqueId(), "rankedduplas");
-                int eloGeral = (elo1v1 + elo4v4 + eloSolo + eloDuplas) / 4;
+                int eloGeral = (elo1v1 + elo2v2 + elo4v4) / 3;
                 return String.valueOf(eloGeral);
             case "bwrank":
                 int eloGeralRank = (eloManager.getElo(player.getUniqueId(), "ranked1v1") +
                         eloManager.getElo(player.getUniqueId(), "ranked4s") +
-                        eloManager.getElo(player.getUniqueId(), "rankedsolo") +
-                        eloManager.getElo(player.getUniqueId(), "rankedduplas")) / 4;
+                        eloManager.getElo(player.getUniqueId(), "ranked2v2cm")) / 3;
                 return eloManager.getRank(eloGeralRank);
         }
 

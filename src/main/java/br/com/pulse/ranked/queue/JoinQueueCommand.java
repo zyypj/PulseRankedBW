@@ -51,7 +51,15 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
     }
 
     public void openJoinMenu(Player player) {
-        Inventory joinMenu = Bukkit.createInventory(player, 54, "§7Entrar em uma Fila");
+        Inventory joinMenu = Bukkit.createInventory(player, 45, "§7Entrar em uma Fila");
+
+        UUID playerUUID = player.getUniqueId();
+
+        int elo1v1 = eloManager.getElo(playerUUID, "ranked1v1");
+        int elo4v4 = eloManager.getElo(playerUUID, "ranked4s");
+        int elo2v2 = eloManager.getElo(playerUUID, "ranked2v2cm");
+        int eloGeral = (elo1v1 + elo4v4 + elo2v2) / 3;
+        String rank = eloManager.getRank(eloGeral);
 
         ItemStack infoItem = new ItemStack(Material.PAPER);
         ItemMeta infoMeta = infoItem.getItemMeta();
@@ -59,15 +67,15 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
         List<String> infoLore = new ArrayList<>();
         infoLore.add("§7Veja suas informações pessoais");
         infoLore.add("");
-        infoLore.add("§7Seu Rank: " + eloManager.getRank(eloManager.getElo(player.getUniqueId(), "geral")));
-        infoLore.add("§7Seu Elo Geral: §5" + eloManager.getElo(player.getUniqueId(), "geral"));
+        infoLore.add("§7Seu Rank: " + rank);
+        infoLore.add("§7Seu Elo Geral: §5" + eloGeral);
         infoMeta.setLore(infoLore);
         infoItem.setItemMeta(infoMeta);
         joinMenu.setItem(13, infoItem);
 
         ItemStack Ranked1v1Item = new ItemStack(Material.BED);
         ItemMeta Ranked1v1Meta = Ranked1v1Item.getItemMeta();
-        Ranked1v1Meta.setDisplayName("§a1v1 Ranked");
+        Ranked1v1Meta.setDisplayName("§aRanked 1v1");
         List<String> Ranked1v1Lore = new ArrayList<>();
         Ranked1v1Lore.add("§7Entrar na fila para 1v1 Ranked");
         Ranked1v1Lore.add("");
@@ -76,33 +84,22 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
         Ranked1v1Lore.add("§eClique para entrar na fila");
         Ranked1v1Meta.setLore(Ranked1v1Lore);
         Ranked1v1Item.setItemMeta(Ranked1v1Meta);
-        joinMenu.setItem(31, Ranked1v1Item);
+        joinMenu.setItem(30, Ranked1v1Item);
 
-        ItemStack RankedSoloItem = new ItemStack(Material.BED);
-        ItemMeta RankedSoloMeta = RankedSoloItem.getItemMeta();
-        RankedSoloMeta.setDisplayName("§aSolo Ranked");
-        List<String> RankedSoloLore = new ArrayList<>();
-        RankedSoloLore.add("§7Entrar na fila para Solo Ranked");
-        RankedSoloLore.add("");
-        RankedSoloLore.add("§7Elo Solo: §5" + eloManager.getElo(player.getUniqueId(), "rankedsolo"));
-        RankedSoloLore.add("");
-        RankedSoloLore.add("§eClique para entrar na fila");
-        RankedSoloMeta.setLore(RankedSoloLore);
-        RankedSoloItem.setItemMeta(RankedSoloMeta);
-        joinMenu.setItem(39, RankedSoloItem);
-
-        ItemStack RankedDuplasItem = new ItemStack(Material.BED, 2);
-        ItemMeta RankedDuplasMeta = RankedDuplasItem.getItemMeta();
-        RankedDuplasMeta.setDisplayName("§aDuplas Ranked");
-        List<String> RankedDuplasLore = new ArrayList<>();
-        RankedDuplasLore.add("§7Entrar em filas para Duplas Ranked");
-        RankedDuplasLore.add("");
-        RankedDuplasLore.add("§7Elo Duplas: §5" + eloManager.getElo(player.getUniqueId(), "rankedduplas"));
-        RankedDuplasLore.add("");
-        RankedDuplasLore.add("§eClique para entrar na fila");
-        RankedDuplasMeta.setLore(RankedDuplasLore);
-        RankedDuplasItem.setItemMeta(RankedDuplasMeta);
-        joinMenu.setItem(41, RankedDuplasItem);
+        ItemStack Ranked2v2CMItem = new ItemStack(Material.BED, 2);
+        ItemMeta Ranked2v2CMMeta = Ranked2v2CMItem.getItemMeta();
+        Ranked2v2CMMeta.setDisplayName("§aRanked 2v2");
+        List<String> Ranked2v2CMLore = new ArrayList<>();
+        Ranked2v2CMLore.add("§8Cross-Map");
+        Ranked2v2CMLore.add("");
+        Ranked2v2CMLore.add("§7Entrar na fila para Ranked 2v2");
+        Ranked2v2CMLore.add("");
+        Ranked2v2CMLore.add("§7Elo 2v2: §5" + eloManager.getElo(player.getUniqueId(), "ranked2v2cm"));
+        Ranked2v2CMLore.add("");
+        Ranked2v2CMLore.add("§eClique para entrar na fila");
+        Ranked2v2CMMeta.setLore(Ranked2v2CMLore);
+        Ranked2v2CMItem.setItemMeta(Ranked2v2CMMeta);
+        joinMenu.setItem(32, Ranked2v2CMItem);
 
         player.openInventory(joinMenu);
     }
@@ -121,7 +118,8 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
                 int eloDuplas = eloManager.getElo(playerUUID, "rankedduplas");
                 int elo1v1 = eloManager.getElo(playerUUID, "ranked1v1");
                 int elo4v4 = eloManager.getElo(playerUUID, "ranked4s");
-                int eloGeral = (eloSolo + eloDuplas + elo1v1 + elo4v4) / 4;
+                int elo2v2 = eloManager.getElo(playerUUID, "ranked2v2cm");
+                int eloGeral = (elo1v1 + elo4v4 + elo2v2) / 3;
                 String rank = eloManager.getRank(eloGeral);
 
                 player.sendMessage("§5§lPRanked §7§lBed Wars");
@@ -131,9 +129,8 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
                 player.sendMessage("§7Rank: " + rank);
                 player.sendMessage("§7Elo Geral: §5" + eloGeral);
                 player.sendMessage("");
-                player.sendMessage("§7Elo Solo: §5" + eloSolo);
-                player.sendMessage("§7Elo Duplas: §5" + eloDuplas);
                 player.sendMessage("§7Elo 1v1: §5" + elo1v1);
+                player.sendMessage("§7Elo 2v2: §5" + elo2v2);
                 player.sendMessage("§7Elo 4v4: §5" + elo4v4);
                 player.sendMessage("");
                 player.closeInventory();
@@ -147,14 +144,26 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
                 }
                 queueManager.joinQueue(player, "Ranked1v1");
                 player.closeInventory();
-            } else if (e.getSlot() == 39 && e.getCurrentItem().getType() == Material.BED) {
-                if (bedwarsAPI.getPartyUtil().hasParty(player)) {
-                    player.sendMessage("§cVocê não pode entrar em uma fila ranqueada em party!");
+            } else if (e.getSlot() == 32 && e.getCurrentItem().getType() == Material.BED) {
+                if (!bedwarsAPI.getPartyUtil().hasParty(player)) {
+                    player.sendMessage("§cVocê precisa estar em uma party para entrar nessa fila!");
                     player.closeInventory();
                     player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
                     return;
                 }
-                bedwarsAPI.getArenaUtil().joinRandomFromGroup(player, "RankedSolo");
+                if (!bedwarsAPI.getPartyUtil().isOwner(player)) {
+                    player.sendMessage("§cApenas o dono da party pode fazer isso!");
+                    player.closeInventory();
+                    player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
+                    return;
+                }
+                if (bedwarsAPI.getPartyUtil().partySize(player) != 2) {
+                    player.sendMessage("§cVocê precisa ter exatamente 2 pessoas na party para entrar nessa fila!");
+                    player.closeInventory();
+                    player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
+                    return;
+                }
+                queueManager.joinQueue(player, "Ranked2v2CM");
                 player.closeInventory();
             } else  if (e.getSlot() == 41 && e.getCurrentItem().getType() == Material.BED) {
                 if (!bedwarsAPI.getPartyUtil().hasParty(player)) {

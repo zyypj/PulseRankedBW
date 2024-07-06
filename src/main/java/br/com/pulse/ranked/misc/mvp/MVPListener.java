@@ -34,7 +34,11 @@ public class MVPListener implements Listener {
         if (bedwarsAPI.getArenaUtil().isPlaying(killer)) {
             IArena arena = e.getArena();
             String group = arena.getGroup();
-            if (group.equalsIgnoreCase("RankedSolo") || group.equalsIgnoreCase("RankedDuplas") || group.equalsIgnoreCase("Ranked1v1") || group.equalsIgnoreCase("Ranked4s")) {
+            if (group.equalsIgnoreCase("RankedSolo")
+                    || group.equalsIgnoreCase("RankedDuplas")
+                    || group.equalsIgnoreCase("Ranked1v1")
+                    || group.equalsIgnoreCase("Ranked4s")
+                    || group.equalsIgnoreCase("Ranked2v2CM")) {
                 if (e.getCause().isFinalKill()) {
                     mvpManager.addFinalKillsPoints(killer, arena);
                 }
@@ -46,8 +50,11 @@ public class MVPListener implements Listener {
     public void onBedBreaking(PlayerBedBreakEvent e) {
         IArena arena = e.getArena();
         String group = arena.getGroup();
-        if (group.equalsIgnoreCase("RankedSolo") || group.equalsIgnoreCase("RankedDuplas")
-                || group.equalsIgnoreCase("Ranked1v1") || group.equalsIgnoreCase("Ranked4s")) {
+        if (group.equalsIgnoreCase("RankedSolo")
+                || group.equalsIgnoreCase("RankedDuplas")
+                || group.equalsIgnoreCase("Ranked1v1")
+                || group.equalsIgnoreCase("Ranked4s")
+                || group.equalsIgnoreCase("Ranked2v2CM")) {
             Player player = e.getPlayer();
             if (player != null) {
                 mvpManager.addBedBreakingPoints(player, arena);
@@ -59,8 +66,11 @@ public class MVPListener implements Listener {
     public void onGameEnd(GameEndEvent e) {
         IArena arena = e.getArena();
         String group = arena.getGroup();
-        if (group.equalsIgnoreCase("RankedSolo") || group.equalsIgnoreCase("RankedDuplas")
-                || group.equalsIgnoreCase("Ranked1v1") || group.equalsIgnoreCase("Ranked4s")) {
+        if (group.equalsIgnoreCase("RankedSolo")
+                || group.equalsIgnoreCase("RankedDuplas")
+                || group.equalsIgnoreCase("Ranked1v1")
+                || group.equalsIgnoreCase("Ranked4s")
+                || group.equalsIgnoreCase("Ranked2v2CM")) {
             Player mvp = mvpManager.determineMVP(arena);
             List<Player> players = e.getArena().getPlayers();
             for (Player player : players) {

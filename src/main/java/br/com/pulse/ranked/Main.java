@@ -7,6 +7,7 @@ import br.com.pulse.ranked.integrations.BedWars2023;
 import br.com.pulse.ranked.integrations.IIntegration;
 import br.com.pulse.ranked.misc.RankCommand;
 import br.com.pulse.ranked.misc.fourS.ForgeManager;
+import br.com.pulse.ranked.misc.fourS.TeamManager;
 import br.com.pulse.ranked.misc.listeners.AntiLadder;
 import br.com.pulse.ranked.misc.mvp.MVPCommand;
 import br.com.pulse.ranked.misc.mvp.MVPListener;
@@ -112,7 +113,7 @@ public class Main extends JavaPlugin {
         MVPManager mvpManager = new MVPManager();
 
         registerEvents(new JoinQueueCommand(queueManager, eloManager), new EloListener(eloManager, this, playerData),
-        new AntiLadder(), new ForgeManager(this), new MVPListener(this, mvpManager, eloManager));
+        new AntiLadder(), new ForgeManager(this), new MVPListener(this, mvpManager, eloManager), new TeamManager());
 
         getCommand("joinqueue").setExecutor(new JoinQueueCommand(queueManager, eloManager));
         getCommand("leavequeue").setExecutor(new LeaveQueueCommand(queueManager));
