@@ -1,13 +1,13 @@
 package br.com.pulse.ranked.misc.fourS;
 
 import br.com.pulse.ranked.Main;
-import com.tomkeuper.bedwars.api.arena.GameState;
+import com.tomkeuper.bedwars.api.BedWars;
 import com.tomkeuper.bedwars.api.arena.IArena;
 import com.tomkeuper.bedwars.api.arena.team.ITeam;
 import com.tomkeuper.bedwars.api.arena.team.ITeamAssigner;
-import com.tomkeuper.bedwars.api.events.gameplay.TeamAssignEvent;
-import com.tomkeuper.bedwars.api.events.player.PlayerJoinArenaEvent;
 import com.tomkeuper.bedwars.api.events.server.ArenaEnableEvent;
+import me.agent.teamselector.api.events.TeamSelectorOpenEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,6 +18,8 @@ import java.util.List;
 public class TeamManager implements Listener, ITeamAssigner {
 
     private final LinkedList<ITeam> teams = new LinkedList<>();
+
+    BedWars bedwarsAPI = Bukkit.getServicesManager().getRegistration(BedWars.class).getProvider();
 
     @EventHandler
     public void onArenaLoad(ArenaEnableEvent event) {
@@ -61,5 +63,21 @@ public class TeamManager implements Listener, ITeamAssigner {
             }
         }
         teams.clear();
+    }
+
+    @EventHandler
+    public void tmOnOpen(TeamSelectorOpenEvent e) {
+
+        Player player = e.getPlayer();
+
+        IArena arena = bedwarsAPI.getArenaUtil().getArenaByPlayer(player);
+
+        if (arena != null) {
+            if (arena.getGroup().equalsIgnoreCase("Ranked4s")
+                    || arena.getGroup().equalsIgnoreCase("Ranked2v2CM")) {
+                e.setCancelled(true);
+                player.sendMessage("§cFuncionalidade desativada no modo " + arena.getGroup());
+            }
+        }
     }
 }
