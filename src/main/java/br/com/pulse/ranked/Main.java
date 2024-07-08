@@ -3,11 +3,11 @@ package br.com.pulse.ranked;
 import br.com.pulse.ranked.elo.EloListener;
 import br.com.pulse.ranked.elo.EloManager;
 import br.com.pulse.ranked.elo.commands.EloCommand;
-import br.com.pulse.ranked.integrations.BedWars2023;
-import br.com.pulse.ranked.integrations.IIntegration;
 import br.com.pulse.ranked.misc.RankCommand;
 import br.com.pulse.ranked.misc.fourS.ForgeManager;
 import br.com.pulse.ranked.misc.fourS.TeamManager;
+import br.com.pulse.ranked.misc.fourS.match.MatchCommand;
+import br.com.pulse.ranked.misc.fourS.match.MatchListener;
 import br.com.pulse.ranked.misc.listeners.AntiLadder;
 import br.com.pulse.ranked.misc.mvp.MVPCommand;
 import br.com.pulse.ranked.misc.mvp.MVPListener;
@@ -16,7 +16,6 @@ import br.com.pulse.ranked.queue.JoinQueueCommand;
 import br.com.pulse.ranked.queue.LeaveQueueCommand;
 import br.com.pulse.ranked.queue.QueueManager;
 import br.com.pulse.ranked.support.Placeholder;
-import com.avaje.ebeaninternal.server.lib.util.NotFoundException;
 import com.tomkeuper.bedwars.api.BedWars;
 import com.tomkeuper.bedwars.api.server.VersionSupport;
 import org.bukkit.Bukkit;
@@ -113,13 +112,14 @@ public class Main extends JavaPlugin {
         MVPManager mvpManager = new MVPManager();
 
         registerEvents(new JoinQueueCommand(queueManager, eloManager), new EloListener(eloManager, this, playerData),
-        new AntiLadder(), new ForgeManager(this), new MVPListener(this, mvpManager, eloManager), new TeamManager());
+        new AntiLadder(), new ForgeManager(this), new MVPListener(this, mvpManager, eloManager), new TeamManager(), new MatchListener(this));
 
         getCommand("joinqueue").setExecutor(new JoinQueueCommand(queueManager, eloManager));
         getCommand("leavequeue").setExecutor(new LeaveQueueCommand(queueManager));
         getCommand("rank").setExecutor(new RankCommand(eloManager));
         getCommand("elo").setExecutor(new EloCommand(eloManager));
         getCommand("mvp").setExecutor(new MVPCommand(eloManager));
+        getCommand("partida").setExecutor(new MatchCommand(this));
 
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             Bukkit.getScheduler().runTaskLater(this, () ->

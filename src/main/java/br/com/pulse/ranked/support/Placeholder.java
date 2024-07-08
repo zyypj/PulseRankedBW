@@ -2,7 +2,9 @@ package br.com.pulse.ranked.support;
 
 import br.com.pulse.ranked.Main;
 import br.com.pulse.ranked.elo.EloManager;
+import com.github.syncwrld.prankedbw.bw4sbot.api.Ranked4SApi;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,6 +12,7 @@ public class Placeholder extends PlaceholderExpansion {
 
     private final Main plugin;
     private final EloManager eloManager;
+    Ranked4SApi api = Bukkit.getServicesManager().getRegistration(Ranked4SApi.class).getProvider();
 
     public Placeholder(Main plugin, EloManager eloManager) {
         this.plugin = plugin;
@@ -30,14 +33,14 @@ public class Placeholder extends PlaceholderExpansion {
             case "bwelo_1v1":
                 return String.valueOf(eloManager.getElo(player.getUniqueId(), "ranked1v1"));
             case "bwelo_4s":
-                return String.valueOf(eloManager.getElo(player.getUniqueId(), "ranked4s"));
+                return String.valueOf(api.getElo(player));
             case "bwelo_solo":
                 return String.valueOf(eloManager.getElo(player.getUniqueId(), "rankedsolo"));
             case "bwelo_duplas":
                 return String.valueOf(eloManager.getElo(player.getUniqueId(), "rankeduplas"));
             case "bwelo_geral":
                 int elo1v1 = eloManager.getElo(player.getUniqueId(), "ranked1v1");
-                int elo4v4 = eloManager.getElo(player.getUniqueId(), "ranked4s");
+                int elo4v4 = api.getElo(player);
                 int elo2v2 = eloManager.getElo(player.getUniqueId(), "ranked2v2cm");
                 int eloSolo = eloManager.getElo(player.getUniqueId(), "rankedsolo");
                 int eloDuplas = eloManager.getElo(player.getUniqueId(), "rankedduplas");

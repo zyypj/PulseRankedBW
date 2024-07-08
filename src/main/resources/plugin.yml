@@ -1,6 +1,7 @@
 name: PulseRankedBW
 version: '${project.version}'
 main: br.com.pulse.ranked.Main
+depend: [PRanked4sBOT]
 softdepend: [BedWars2023, PlaceholderAPI]
 commands:
   joinqueue:
@@ -17,3 +18,6 @@ commands:
   mvp:
     description: Quantidade de vezes mvp
     aliases: [mostvaluableplayer]
+  partida:
+    description: Ver informações sobre uma partida
+    aliases: [matchinfo, infopartida, partidainfo]

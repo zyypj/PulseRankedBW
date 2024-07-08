@@ -73,10 +73,12 @@ public class TeamManager implements Listener, ITeamAssigner {
         IArena arena = bedwarsAPI.getArenaUtil().getArenaByPlayer(player);
 
         if (arena != null) {
-            if (arena.getGroup().equalsIgnoreCase("Ranked4s")
-                    || arena.getGroup().equalsIgnoreCase("Ranked2v2CM")) {
-                e.setCancelled(true);
-                player.sendMessage("§cFuncionalidade desativada no modo " + arena.getGroup());
+            if (!player.hasPermission("bw.admin")) {
+                if (arena.getGroup().equalsIgnoreCase("Ranked4s")
+                        || arena.getGroup().equalsIgnoreCase("Ranked2v2CM")) {
+                    e.setCancelled(true);
+                    player.sendMessage("§cFuncionalidade desativada no modo " + arena.getGroup());
+                }
             }
         }
     }

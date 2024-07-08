@@ -1,6 +1,7 @@
 package br.com.pulse.ranked.queue;
 
 import br.com.pulse.ranked.elo.EloManager;
+import com.github.syncwrld.prankedbw.bw4sbot.api.Ranked4SApi;
 import com.tomkeuper.bedwars.api.BedWars;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -25,6 +26,7 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
     private final QueueManager queueManager;
     private final EloManager eloManager;
     BedWars bedwarsAPI = Bukkit.getServicesManager().getRegistration(BedWars.class).getProvider();
+    Ranked4SApi api = Bukkit.getServicesManager().getRegistration(Ranked4SApi.class).getProvider();
 
     public JoinQueueCommand(QueueManager queueManager, EloManager eloManager) {
         this.queueManager = queueManager;
@@ -45,7 +47,6 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
             player.sendMessage("");
             return true;
         }
-
         openJoinMenu(player);
         return true;
     }
@@ -56,7 +57,7 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
         UUID playerUUID = player.getUniqueId();
 
         int elo1v1 = eloManager.getElo(playerUUID, "ranked1v1");
-        int elo4v4 = eloManager.getElo(playerUUID, "ranked4s");
+        int elo4v4 = api.getElo(player);
         int elo2v2 = eloManager.getElo(playerUUID, "ranked2v2cm");
         int eloGeral = (elo1v1 + elo4v4 + elo2v2) / 3;
         String rank = eloManager.getRank(eloGeral);
@@ -117,7 +118,7 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
                 int eloSolo = eloManager.getElo(playerUUID, "rankedsolo");
                 int eloDuplas = eloManager.getElo(playerUUID, "rankedduplas");
                 int elo1v1 = eloManager.getElo(playerUUID, "ranked1v1");
-                int elo4v4 = eloManager.getElo(playerUUID, "ranked4s");
+                int elo4v4 = api.getElo(player);
                 int elo2v2 = eloManager.getElo(playerUUID, "ranked2v2cm");
                 int eloGeral = (elo1v1 + elo4v4 + elo2v2) / 3;
                 String rank = eloManager.getRank(eloGeral);
@@ -135,7 +136,7 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
                 player.sendMessage("");
                 player.closeInventory();
 
-            } else if (e.getSlot() == 31 && e.getCurrentItem().getType() == Material.BED) {
+            } else if (e.getSlot() == 30 && e.getCurrentItem().getType() == Material.BED) {
                 if (bedwarsAPI.getPartyUtil().hasParty(player)) {
                     player.sendMessage("§cVocê não pode entrar em uma fila ranqueada em party!");
                     player.closeInventory();

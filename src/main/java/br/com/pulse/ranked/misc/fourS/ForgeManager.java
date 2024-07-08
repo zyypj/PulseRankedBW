@@ -29,14 +29,12 @@ public class ForgeManager implements Listener {
             GameState gameState = e.getNewState();
 
             if (gameState.name().equalsIgnoreCase("playing")) {
-                Main.debug("(playing detected)");
                 IArena arena = e.getArena();
                 ITeam verde = arena.getTeam("Verde");
 
                 List<IGenerator> generators = verde.getGenerators();
                 for (IGenerator generator : generators) {
                     generator.disable();
-                    Bukkit.getConsoleSender().sendMessage("[ForgeManager] >> Debug (generator disabled)");
                 }
             }
         }
@@ -53,7 +51,6 @@ public class ForgeManager implements Listener {
                 List<IGenerator> generators = verde.getGenerators();
                 for (IGenerator generator : generators) {
                     generator.enable();
-                    Bukkit.getConsoleSender().sendMessage("[ForgeManager] >> Debug (generator enabled)");
                 }
 
                 List<Player> players = arena.getPlayers();

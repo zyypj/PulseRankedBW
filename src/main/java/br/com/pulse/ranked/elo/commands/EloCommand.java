@@ -1,6 +1,7 @@
 package br.com.pulse.ranked.elo.commands;
 
 import br.com.pulse.ranked.elo.EloManager;
+import com.github.syncwrld.prankedbw.bw4sbot.api.Ranked4SApi;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -12,6 +13,8 @@ import java.util.UUID;
 public class EloCommand implements CommandExecutor {
 
     private final EloManager eloManager;
+
+    Ranked4SApi api = Bukkit.getServicesManager().getRegistration(Ranked4SApi.class).getProvider();
 
     public EloCommand(EloManager eloManager) {
         this.eloManager = eloManager;
@@ -27,7 +30,7 @@ public class EloCommand implements CommandExecutor {
         int eloSolo = eloManager.getElo(playerUUID, "rankedsolo");
         int eloDuplas = eloManager.getElo(playerUUID, "rankedduplas");
         int elo1v1 = eloManager.getElo(playerUUID, "ranked1v1");
-        int elo4v4 = eloManager.getElo(playerUUID, "ranked4s");
+        int elo4v4 = api.getElo(player);
         int elo2v2cm = eloManager.getElo(playerUUID, "ranked2v2cm");
         int eloGeral = (elo1v1 + elo4v4 + elo2v2cm) / 3;
         String rank = eloManager.getRank(eloGeral);
@@ -83,7 +86,7 @@ public class EloCommand implements CommandExecutor {
             int eloSoloT = eloManager.getElo(targetUUID, "rankedsolo");
             int eloDuplasT = eloManager.getElo(targetUUID, "rankedduplas");
             int elo1v1T = eloManager.getElo(targetUUID, "ranked1v1");
-            int elo4v4T = eloManager.getElo(targetUUID, "ranked4s");
+            int elo4v4T = api.getElo(target);
             int elo2v2CMT = eloManager.getElo(targetUUID, "ranked2v2cm");
             int eloGeralT = (elo1v1T + elo2v2CMT + elo4v4T) / 3;
             String rankT = eloManager.getRank(eloGeralT);
@@ -162,7 +165,7 @@ public class EloCommand implements CommandExecutor {
                 sender.sendMessage("§7O Elo 2v2 de §l" + target.getName() + " §7foi definido para §5" + newElo);
                 return true;
             } else if (args[2].equalsIgnoreCase("4s")) {
-                eloManager.setElo(targetUUID, "ranked4s", newElo);
+                api.setElo(target, newElo);
                 sender.sendMessage("§7O Elo 4s de §l" + target.getName() + " §7foi definido para §5" + newElo);
                 return true;
             } else {
