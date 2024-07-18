@@ -36,10 +36,13 @@ public class MatchCommand implements CommandExecutor {
             return true;
         }
 
-        String matchId = args[0];
+        String matchIdN = args[0];
+        String matchId = "bw4s-" + matchIdN;
 
         // Carregar os dados da partida
+        matchStats.reloadConfig();
         FileConfiguration config = matchStats.getConfig(); // Adicione um método para acessar a configuração
+        System.out.println(config);
         if (config.contains(matchId)) {
             String map = config.getString(matchId + ".Mapa");
             String date = config.getString(matchId + ".Data");
@@ -49,28 +52,33 @@ public class MatchCommand implements CommandExecutor {
             List<String> topBedBreaking = config.getStringList(matchId + ".TopBedBreaking");
 
             // Enviar mensagens ao jogador
+            player.sendMessage("");
             player.sendMessage("§7§lInformações da Partida §5§l" + matchId);
             player.sendMessage("§7Mapa: §5" + map);
             player.sendMessage("§7Data: §5" + date);
 
+            player.sendMessage("");
             player.sendMessage("§9Time Azul:");
             for (String member : team1) {
                 player.sendMessage("§7- §9" + member);
             }
 
+            player.sendMessage("");
             player.sendMessage("§cTime Vermelho:");
             for (String member : team2) {
                 player.sendMessage("§7- §c" + member);
             }
 
+            player.sendMessage("");
             player.sendMessage("§7§lTop Kills Finais:");
             for (String kill : topKills) {
                 player.sendMessage("§7- §5" + kill);
             }
 
+            player.sendMessage("");
             player.sendMessage("§7§lTop Destruição de Camas:");
             for (String bedBreak : topBedBreaking) {
-                player.sendMessage("§7- §5" + bedBreak);
+                player.sendMessage("§7- §6" + bedBreak);
             }
 
         } else {

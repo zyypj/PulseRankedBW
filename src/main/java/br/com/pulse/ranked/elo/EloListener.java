@@ -18,7 +18,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 public class EloListener implements Listener {
@@ -60,8 +59,7 @@ public class EloListener implements Listener {
                     || group.equalsIgnoreCase("RankedDuplas")
                     || group.equalsIgnoreCase("Ranked1v1")
                     || group.equalsIgnoreCase("Ranked2v2CM")) {
-                Random random = new Random();
-                int playerEloIncrease = random.nextInt(13) + 4; // Gera um número aleatório de 4 a 16
+                int playerEloIncrease = 12; // Gera um número aleatório de 4 a 16
                 eloManager.addElo(playerUUID, playerEloIncrease, group.toLowerCase());
                 player.sendMessage("§c+" + playerEloIncrease + " Ranked Elo (Quebra de Cama)");
             }
@@ -81,8 +79,7 @@ public class EloListener implements Listener {
                             || group.equalsIgnoreCase("Ranked1v1")
                             || group.equalsIgnoreCase("Ranked2v2CM")) {
                         if (e.getCause().isFinalKill()) {
-                            Random random = new Random();
-                            int killerEloIncrease = random.nextInt(8) + 1; // Gera um número aleatório de 1 a 8
+                            int killerEloIncrease = 6; // Gera um número aleatório de 1 a 8
                             eloManager.addElo(killerUUID, killerEloIncrease, group.toLowerCase());
                             killer.sendMessage("§c+" + killerEloIncrease + " Ranked Elo (Kill Final)");
                             killer.playSound(killer.getLocation(), Sound.LEVEL_UP, 1, 1);
@@ -104,16 +101,14 @@ public class EloListener implements Listener {
                 || group.equalsIgnoreCase("Ranked1v1")
                 || group.equalsIgnoreCase("Ranked2v2CM")) {
             for (Player winner : winnerTeam.getMembers()) {
-                Random random = new Random();
-                int winnerEloIncrease = random.nextInt(11) + 10; // Gera um número aleatório de 10 a 20
+                int winnerEloIncrease = 25; // Gera um número aleatório de 10 a 20
                 eloManager.addElo(winner.getUniqueId(), winnerEloIncrease, group.toLowerCase());
                 winner.sendMessage("§c+" + winnerEloIncrease + " Ranked Elo (Vitória)");
                 winner.playSound(winner.getLocation(), Sound.LEVEL_UP, 1, 1);
             }
             for (UUID loserUUID : loserTeam) {
                 Player loser = Bukkit.getPlayer(loserUUID);
-                Random random = new Random();
-                int loserEloPerca = random.nextInt(11) + 20; // Gera um número aleatório de 20 a 30
+                int loserEloPerca = 35; // Gera um número aleatório de 20 a 30
                 eloManager.addElo(loser.getUniqueId(), loserEloPerca, group.toLowerCase());
                 loser.sendMessage("§c-" + -loserEloPerca + " Ranked Elo (Derrota)");
                 loser.playSound(loser.getLocation(), Sound.LEVEL_UP, 1, 1);
@@ -168,8 +163,9 @@ public class EloListener implements Listener {
         }
 
         if (b) {
-            Bukkit.getConsoleSender().sendMessage(String.valueOf(e.getArena().getUpgradeDiamondsCount()));
-            if (e.getArena().getUpgradeDiamondsCount() != 2) {
+            Bukkit.getConsoleSender().sendMessage(String.valueOf(e.getArena().getNextEvent()));
+            List<String> nextEvents = e.getArena().getNextEvents();
+            if (nextEvents.contains("DIAMOND_GENERATOR_TIER_III")) {
                 if (identifier.equals("utility-category.category-content.bridge-egg")) {
                     player.sendMessage("§cItem bloqueado até o Diamante 3!");
                     e.setCancelled(true);

@@ -2,6 +2,7 @@ package br.com.pulse.ranked.misc.mvp;
 
 import br.com.pulse.ranked.Main;
 import br.com.pulse.ranked.elo.EloManager;
+import com.github.syncwrld.prankedbw.bw4sbot.api.Ranked4SApi;
 import com.tomkeuper.bedwars.api.BedWars;
 import com.tomkeuper.bedwars.api.arena.IArena;
 import com.tomkeuper.bedwars.api.events.gameplay.GameEndEvent;
@@ -21,6 +22,8 @@ public class MVPListener implements Listener {
     private final EloManager eloManager;
 
     BedWars bedwarsAPI = Bukkit.getServicesManager().getRegistration(BedWars.class).getProvider();
+
+    Ranked4SApi api = Bukkit.getServicesManager().getRegistration(Ranked4SApi.class).getProvider();
 
     public MVPListener(Main plugin, MVPManager mvpManager, EloManager eloManager) {
         this.plugin = plugin;
@@ -73,9 +76,22 @@ public class MVPListener implements Listener {
                 || group.equalsIgnoreCase("Ranked2v2CM")) {
             Player mvp = mvpManager.determineMVP(arena);
             List<Player> players = e.getArena().getPlayers();
+
             for (Player player : players) {
                 if (mvp != null) {
-                    Bukkit.getScheduler().runTaskLater(plugin, () -> player.sendMessage("§7O MVP dessa partida foi: §5" + mvp.getName()), 20L);
+
+                    Bukkit.getScheduler().runTaskLater(plugin, () ->  {
+                        player.sendMessage("§7O MVP dessa partida foi: §5" + mvp.getName());
+
+                        if (group.equalsIgnoreCase("Ranked4s")) {
+                            api.setElo(mvp, api.getElo(mvp) + 15);
+                            mvp.sendMessage("§c+ 15 Ranked Elo (MvP)");
+                        } else {
+                            eloManager.addElo(mvp.getUniqueId(), 15, group.toLowerCase());
+                            mvp.sendMessage("§c+ 15 Ranked Elo (MvP)");
+                        }
+                        
+                    },20L);
 
                     int mvpCount = eloManager.getPlayerData().getInt(mvp.getUniqueId() + ".mvp", 0);
                     eloManager.getPlayerData().set(mvp.getUniqueId() + ".mvp", mvpCount + 1);

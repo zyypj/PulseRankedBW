@@ -81,34 +81,37 @@ public class MatchListener implements Listener {
         String map = arena.getDisplayName();
 
         if (arena.getGroup().equalsIgnoreCase("Ranked4s")) {
-            Map<String, Integer> playerKills = new HashMap<>();
-            for (Player player : arena.getPlayers()) {
-                int kills = arena.getPlayerKills(player, true); // true para kills finais
-                if (kills > 0) {
-                    playerKills.put(player.getName(), kills);
+            if (id != null) {
+                Map<String, Integer> playerKills = new HashMap<>();
+                for (Player player : arena.getPlayers()) {
+                    int kills = arena.getPlayerKills(player, true); // true para kills finais
+                    if (kills > 0) {
+                        playerKills.put(player.getName(), kills);
+                    }
                 }
-            }
 
-            Map<String, Integer> playerBedsDestroyed = new HashMap<>();
-            for (Player player : arena.getPlayers()) {
-                int bedsDestroyed = arena.getPlayerBedsDestroyed(player);
-                if (bedsDestroyed > 0) {
-                    playerBedsDestroyed.put(player.getName(), bedsDestroyed);
+                Map<String, Integer> playerBedsDestroyed = new HashMap<>();
+                for (Player player : arena.getPlayers()) {
+                    int bedsDestroyed = arena.getPlayerBedsDestroyed(player);
+                    if (bedsDestroyed > 0) {
+                        playerBedsDestroyed.put(player.getName(), bedsDestroyed);
+                    }
                 }
+
+                List<String> topKills = matchStats.getTopKills(playerKills);
+                List<String> topBedBreaking = matchStats.getTopBedBreaking(playerBedsDestroyed);
+
+                // Log para verificar os dados que estão sendo salvos
+                System.out.println("id: " + id);
+                System.out.println("Mapa: " + map);
+                System.out.println("Team 1: " + team1);
+                System.out.println("Team 2: " + team2);
+                System.out.println("Top Kills Finais: " + topKills);
+                System.out.println("Top Bed Breaking: " + topBedBreaking);
+
+                matchStats.saveMatch(id, map, team1, team2, topKills, topBedBreaking);
+
             }
-
-            List<String> topKills = matchStats.getTopKills(playerKills);
-            List<String> topBedBreaking = matchStats.getTopBedBreaking(playerBedsDestroyed);
-
-            // Log para verificar os dados que estão sendo salvos
-            System.out.println("Mapa: " + map);
-            System.out.println("Team 1: " + team1);
-            System.out.println("Team 2: " + team2);
-            System.out.println("Top Kills Finais: " + topKills);
-            System.out.println("Top Bed Breaking: " + topBedBreaking);
-
-            matchStats.saveMatch(id, map, team1, team2, topKills, topBedBreaking);
-
         }
     }
 }

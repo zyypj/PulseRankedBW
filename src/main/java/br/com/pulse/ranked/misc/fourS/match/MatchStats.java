@@ -77,11 +77,11 @@ public class MatchStats {
         int entryIndex = 0;
         for (Map.Entry<String, Integer> sortedEntry : sortedKills.entrySet()) {
             if (entryIndex == 0) {
-                topKills.add("1º " + sortedEntry.getKey() + " - " + sortedEntry.getValue());
+                topKills.add("§61º " + sortedEntry.getKey() + " §7- §5" + sortedEntry.getValue());
             } else if (entryIndex == 1) {
-                topKills.add("2º " + sortedEntry.getKey() + " - " + sortedEntry.getValue());
+                topKills.add("§82º " + sortedEntry.getKey() + " §7- §5" + sortedEntry.getValue());
             } else if (entryIndex == 2) {
-                topKills.add("3º " + sortedEntry.getKey() + " - " + sortedEntry.getValue());
+                topKills.add("§43º " + sortedEntry.getKey() + " §7- §5" + sortedEntry.getValue());
                 break;
             }
             entryIndex++;
@@ -100,9 +100,15 @@ public class MatchStats {
                 .forEachOrdered(x -> sortedBeds.put(x.getKey(), x.getValue()));
 
         for (Map.Entry<String, Integer> entry : sortedBeds.entrySet()) {
-            topBedBreaking.add(entry.getKey() + " - " + entry.getValue());
+            topBedBreaking.add(entry.getKey() + " §7- §5" + entry.getValue());
         }
 
         return topBedBreaking;
+    }
+
+    public void reloadConfig() {
+        if (matchsFile != null) {
+            matchsConfig = YamlConfiguration.loadConfiguration(matchsFile);
+        }
     }
 }
