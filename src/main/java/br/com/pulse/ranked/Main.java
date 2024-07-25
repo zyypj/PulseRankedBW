@@ -107,8 +107,8 @@ public class Main extends JavaPlugin {
         }
         FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerDataFile);
 
-        queueManager = new QueueManager(this, eloManager);
         eloManager = new EloManager(playerData);
+        queueManager = new QueueManager(this, eloManager);
         MVPManager mvpManager = new MVPManager();
 
         registerEvents(new JoinQueueCommand(queueManager, eloManager), new EloListener(eloManager, this, playerData),

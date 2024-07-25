@@ -35,11 +35,10 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage("§cEste comando só pode ser executado por jogadores.");
             return true;
         }
-        Player player = (Player) sender;
         if (!player.hasPermission("bw.vip") && bedwarsAPI.getStatsUtil().getPlayerWins(player.getUniqueId()) < 100) {
             player.sendMessage("");
             player.sendMessage("§c§lVocê precisa ter §a§lVIP §c§l ou mais de");
@@ -113,80 +112,84 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
             if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR) {
                 return;
             }
-            if (e.getSlot() == 13 && e.getCurrentItem().getType() == Material.PAPER) {
-                UUID playerUUID = player.getUniqueId();
-                int eloSolo = eloManager.getElo(playerUUID, "rankedsolo");
-                int eloDuplas = eloManager.getElo(playerUUID, "rankedduplas");
-                int elo1v1 = eloManager.getElo(playerUUID, "ranked1v1");
-                int elo4v4 = api.getElo(player);
-                int elo2v2 = eloManager.getElo(playerUUID, "ranked2v2cm");
-                int eloGeral = (elo1v1 + elo4v4 + elo2v2) / 3;
-                String rank = eloManager.getRank(eloGeral);
+            ItemStack clickedItem = e.getCurrentItem();
+            if (clickedItem.hasItemMeta() && clickedItem.getItemMeta().hasDisplayName()) {
+                String displayName = clickedItem.getItemMeta().getDisplayName();
+                if (e.getSlot() == 13 && clickedItem.getType() == Material.PAPER) {
+                    UUID playerUUID = player.getUniqueId();
+                    int eloSolo = eloManager.getElo(playerUUID, "rankedsolo");
+                    int eloDuplas = eloManager.getElo(playerUUID, "rankedduplas");
+                    int elo1v1 = eloManager.getElo(playerUUID, "ranked1v1");
+                    int elo4v4 = api.getElo(player);
+                    int elo2v2 = eloManager.getElo(playerUUID, "ranked2v2cm");
+                    int eloGeral = (elo1v1 + elo4v4 + elo2v2) / 3;
+                    String rank = eloManager.getRank(eloGeral);
 
-                player.sendMessage("§5§lPRanked §7§lBed Wars");
-                player.sendMessage("");
-                player.sendMessage("§7Estatísticas de §l" + player.getName());
-                player.sendMessage("");
-                player.sendMessage("§7Rank: " + rank);
-                player.sendMessage("§7Elo Geral: §5" + eloGeral);
-                player.sendMessage("");
-                player.sendMessage("§7Elo 1v1: §5" + elo1v1);
-                player.sendMessage("§7Elo 2v2: §5" + elo2v2);
-                player.sendMessage("§7Elo 4v4: §5" + elo4v4);
-                player.sendMessage("");
-                player.closeInventory();
+                    player.sendMessage("§5§lPRanked §7§lBed Wars");
+                    player.sendMessage("");
+                    player.sendMessage("§7Estatísticas de §l" + player.getName());
+                    player.sendMessage("");
+                    player.sendMessage("§7Rank: " + rank);
+                    player.sendMessage("§7Elo Geral: §5" + eloGeral);
+                    player.sendMessage("");
+                    player.sendMessage("§7Elo 1v1: §5" + elo1v1);
+                    player.sendMessage("§7Elo 2v2: §5" + elo2v2);
+                    player.sendMessage("§7Elo 4v4: §5" + elo4v4);
+                    player.sendMessage("");
+                    player.closeInventory();
 
-            } else if (e.getSlot() == 30 && e.getCurrentItem().getType() == Material.BED) {
-                if (bedwarsAPI.getPartyUtil().hasParty(player)) {
-                    player.sendMessage("§cVocê não pode entrar em uma fila ranqueada em party!");
+                } else if (e.getSlot() == 30 && clickedItem.getType() == Material.BED && displayName.equals("§aRanked 1v1")) {
+                    if (bedwarsAPI.getPartyUtil().hasParty(player)) {
+                        player.sendMessage("§cVocê não pode entrar em uma fila ranqueada em party!");
+                        player.closeInventory();
+                        player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
+                        return;
+                    }
+                    queueManager.joinQueue(player, "Ranked1v1");
                     player.closeInventory();
-                    player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
-                    return;
-                }
-                queueManager.joinQueue(player, "Ranked1v1");
-                player.closeInventory();
-            } else if (e.getSlot() == 32 && e.getCurrentItem().getType() == Material.BED) {
-                if (!bedwarsAPI.getPartyUtil().hasParty(player)) {
-                    player.sendMessage("§cVocê precisa estar em uma party para entrar nessa fila!");
+                } else if (e.getSlot() == 32 && clickedItem.getType() == Material.BED && displayName.equals("§aRanked 2v2")) {
+                    if (!bedwarsAPI.getPartyUtil().hasParty(player)) {
+                        player.sendMessage("§cVocê precisa estar em uma party para entrar nessa fila!");
+                        player.closeInventory();
+                        player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
+                        return;
+                    }
+                    if (!bedwarsAPI.getPartyUtil().isOwner(player)) {
+                        player.sendMessage("§cApenas o dono da party pode fazer isso!");
+                        player.closeInventory();
+                        player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
+                        return;
+                    }
+                    if (bedwarsAPI.getPartyUtil().partySize(player) != 2) {
+                        player.sendMessage("§cVocê precisa ter exatamente 2 pessoas na party para entrar nessa fila!");
+                        player.closeInventory();
+                        player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
+                        return;
+                    }
+                    queueManager.joinQueue(player, "Ranked2v2CM");
                     player.closeInventory();
-                    player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
-                    return;
-                }
-                if (!bedwarsAPI.getPartyUtil().isOwner(player)) {
-                    player.sendMessage("§cApenas o dono da party pode fazer isso!");
+                } else if (e.getSlot() == 41 && clickedItem.getType() == Material.BED && displayName.equals("§aRanked Duplas")) {
+                    if (!bedwarsAPI.getPartyUtil().hasParty(player)) {
+                        player.sendMessage("§cVocê precisa estar em uma party para entrar nessa fila!");
+                        player.closeInventory();
+                        player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
+                        return;
+                    }
+                    if (!bedwarsAPI.getPartyUtil().isOwner(player)) {
+                        player.sendMessage("§cApenas o dono da party pode fazer isso!");
+                        player.closeInventory();
+                        player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
+                        return;
+                    }
+                    if (bedwarsAPI.getPartyUtil().partySize(player) != 2) {
+                        player.sendMessage("§cVocê precisa ter exatamente 2 pessoas na party para entrar nessa fila!");
+                        player.closeInventory();
+                        player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
+                        return;
+                    }
+                    bedwarsAPI.getArenaUtil().joinRandomFromGroup(player, "RankedDuplas");
                     player.closeInventory();
-                    player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
-                    return;
                 }
-                if (bedwarsAPI.getPartyUtil().partySize(player) != 2) {
-                    player.sendMessage("§cVocê precisa ter exatamente 2 pessoas na party para entrar nessa fila!");
-                    player.closeInventory();
-                    player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
-                    return;
-                }
-                queueManager.joinQueue(player, "Ranked2v2CM");
-                player.closeInventory();
-            } else  if (e.getSlot() == 41 && e.getCurrentItem().getType() == Material.BED) {
-                if (!bedwarsAPI.getPartyUtil().hasParty(player)) {
-                    player.sendMessage("§cVocê precisa estar em uma party para entrar nessa fila!");
-                    player.closeInventory();
-                    player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
-                    return;
-                }
-                if (!bedwarsAPI.getPartyUtil().isOwner(player)) {
-                    player.sendMessage("§cApenas o dono da party pode fazer isso!");
-                    player.closeInventory();
-                    player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
-                    return;
-                }
-                if (bedwarsAPI.getPartyUtil().partySize(player) != 2) {
-                    player.sendMessage("§cVocê precisa ter exatamente 2 pessoas na party para entrar nessa fila!");
-                    player.closeInventory();
-                    player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
-                    return;
-                }
-                bedwarsAPI.getArenaUtil().joinRandomFromGroup(player, "RankedDuplas");
-                player.closeInventory();
             }
         }
     }

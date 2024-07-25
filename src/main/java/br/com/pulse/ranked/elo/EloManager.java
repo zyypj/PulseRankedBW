@@ -1,6 +1,7 @@
 package br.com.pulse.ranked.elo;
 
 import br.com.pulse.ranked.EloAPI;
+import com.github.syncwrld.prankedbw.bw4sbot.api.Ranked4SApi;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,11 +16,20 @@ public class EloManager implements EloAPI {
 
     private final FileConfiguration playerData;
 
+    Ranked4SApi api = Bukkit.getServicesManager().getRegistration(Ranked4SApi.class).getProvider();
+
     public EloManager(FileConfiguration playerData) {
         this.playerData = playerData;
     }
 
     public int getElo(UUID playerUUID, String type) {
+        if (type.equalsIgnoreCase("geral")) {
+            Player player = Bukkit.getPlayer(playerUUID);
+            int elo1v1 = getElo(playerUUID, "ranked1v1");
+            int elo4v4 = api.getElo(player);
+            int elo2v2cm = getElo(playerUUID, "ranked2v2cm");
+            return (elo1v1 + elo4v4 + elo2v2cm) / 3;
+        }
         return playerData.getInt(playerUUID + "." + type, 0);
     }
 
