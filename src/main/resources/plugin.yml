@@ -21,3 +21,5 @@ commands:
   partida:
     description: Ver informações sobre uma partida
     aliases: [matchinfo, infopartida, partidainfo]
+  rankdisplay:
+    aliases: [displayrank, mostrarrank]

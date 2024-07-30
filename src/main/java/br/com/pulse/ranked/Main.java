@@ -4,11 +4,13 @@ import br.com.pulse.ranked.elo.EloListener;
 import br.com.pulse.ranked.elo.EloManager;
 import br.com.pulse.ranked.elo.commands.EloCommand;
 import br.com.pulse.ranked.misc.RankCommand;
+import br.com.pulse.ranked.misc.RankDisplayCommand;
 import br.com.pulse.ranked.misc.fourS.ForgeManager;
 import br.com.pulse.ranked.misc.fourS.TeamManager;
 import br.com.pulse.ranked.misc.fourS.match.MatchCommand;
 import br.com.pulse.ranked.misc.fourS.match.MatchListener;
 import br.com.pulse.ranked.misc.listeners.AntiLadder;
+import br.com.pulse.ranked.misc.listeners.FireballListener;
 import br.com.pulse.ranked.misc.mvp.MVPCommand;
 import br.com.pulse.ranked.misc.mvp.MVPListener;
 import br.com.pulse.ranked.misc.mvp.MVPManager;
@@ -112,7 +114,8 @@ public class Main extends JavaPlugin {
         MVPManager mvpManager = new MVPManager();
 
         registerEvents(new JoinQueueCommand(queueManager, eloManager), new EloListener(eloManager, this, playerData),
-        new AntiLadder(), new ForgeManager(this), new MVPListener(this, mvpManager, eloManager), new TeamManager(), new MatchListener(this));
+        new AntiLadder(), new ForgeManager(this), new MVPListener(this, mvpManager, eloManager),
+                new TeamManager(), new MatchListener(this), new FireballListener());
 
         getCommand("joinqueue").setExecutor(new JoinQueueCommand(queueManager, eloManager));
         getCommand("leavequeue").setExecutor(new LeaveQueueCommand(queueManager));
@@ -120,11 +123,12 @@ public class Main extends JavaPlugin {
         getCommand("elo").setExecutor(new EloCommand(eloManager));
         getCommand("mvp").setExecutor(new MVPCommand(eloManager));
         getCommand("partida").setExecutor(new MatchCommand(this));
+        getCommand("rankdisplay").setExecutor(new RankDisplayCommand(eloManager));
 
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             Bukkit.getScheduler().runTaskLater(this, () ->
                     getLogger().info("Hook to PlaceholderAPI support!"), 20L);
-            new Placeholder(this, eloManager).register();
+            new Placeholder(this, eloManager, eloManager.getDisplayPreferences()).register();
         }
 
         eloManager.savePlayerData();

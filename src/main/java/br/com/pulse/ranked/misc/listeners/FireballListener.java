@@ -35,8 +35,6 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.UUID;
 
-
-// Desativado
 public class FireballListener implements Listener {
 
     BedWars bedwarsAPI = Bukkit.getServicesManager().getRegistration(BedWars.class).getProvider();
@@ -48,8 +46,8 @@ public class FireballListener implements Listener {
 
     public FireballListener() {
         fireballExplosionSize = 3;
-        fireballHorizontal = 0.80;
-        fireballVertical = 0.65;
+        fireballHorizontal = 1.10 * -1;
+        fireballVertical = 0.80;
 
         damageSelf = 0.5;
         damageEnemy = 0.5;
@@ -74,9 +72,12 @@ public class FireballListener implements Listener {
         if (bedwarsAPI.getArenaUtil().isPlaying(player)) {
             IArena arena = Arena.getArenaByPlayer(player);
             String group = arena.getGroup();
-            if (group.equalsIgnoreCase("RankedSolo") || group.equalsIgnoreCase("RankedDuplas")
-                    || group.equalsIgnoreCase("Ranked1v1") || group.equalsIgnoreCase("Ranked4v4")
-                    || group.equalsIgnoreCase("Ranked2v2CM")) {
+
+            if (arena.getStatus() != GameState.playing || handItem.getType() != Main.nms.materialFireball()) {
+                return;
+            }
+
+            if (group.startsWith("Ranked") || group.startsWith("CxC")) {
 
                 e.setCancelled(true);
 
@@ -122,8 +123,7 @@ public class FireballListener implements Listener {
         }
 
         String group = arena.getGroup();
-        if (!(group.equalsIgnoreCase("RankedSolo") || group.equalsIgnoreCase("RankedDuplas")
-                || group.equalsIgnoreCase("Ranked1v1") || group.equalsIgnoreCase("Ranked4v4"))) {
+        if (!(group.startsWith("Ranked") || group.startsWith("CxC"))) {
             return;
         }
 

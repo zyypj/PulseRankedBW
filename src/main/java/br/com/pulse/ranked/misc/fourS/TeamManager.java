@@ -75,7 +75,8 @@ public class TeamManager implements Listener, ITeamAssigner {
         if (arena != null) {
             if (!player.hasPermission("bw.admin")) {
                 if (arena.getGroup().equalsIgnoreCase("Ranked4s")
-                        || arena.getGroup().equalsIgnoreCase("Ranked2v2CM")) {
+                        || arena.getGroup().equalsIgnoreCase("Ranked2v2CM")
+                        || arena.getGroup().equalsIgnoreCase("CxC4v4")) {
                     e.setCancelled(true);
                     player.sendMessage("§cFuncionalidade desativada no modo " + arena.getGroup());
                 }

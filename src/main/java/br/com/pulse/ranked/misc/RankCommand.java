@@ -50,7 +50,7 @@ public class RankCommand implements CommandExecutor {
             player.sendMessage("§7O Rank de §l" + target.getName() + " §7: §5" + eloManager.getRank(eloSoma));
             return true;
         }
-        player.sendMessage("§cUse /rank <nome>.");
+        player.sendMessage("§cUse /rank <nome>");
         return true;
     }
 }

@@ -16,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 import java.util.UUID;
@@ -41,6 +42,13 @@ public class EloListener implements Listener {
             playerData.set(uuid.toString(), 0);
             eloManager.savePlayerData();
         }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // Define a gamerule randomTickSpeed como 0 em todos os mundos
+                Bukkit.getWorlds().forEach(world -> world.setGameRuleValue("randomTickSpeed", "0"));
+            }
+        }.runTaskLater(plugin, 1L); // Executa a tarefa após 1 tick para garantir que o jogador esteja no mundo
     }
 
     @EventHandler

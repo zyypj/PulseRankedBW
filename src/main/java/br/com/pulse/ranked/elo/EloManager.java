@@ -7,19 +7,25 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class EloManager implements EloAPI {
 
     private final FileConfiguration playerData;
+    private final Map<UUID, Boolean> displayPreferences;
 
     Ranked4SApi api = Bukkit.getServicesManager().getRegistration(Ranked4SApi.class).getProvider();
 
     public EloManager(FileConfiguration playerData) {
         this.playerData = playerData;
+        this.displayPreferences = new HashMap<>();
+        loadDisplayPreferences();
     }
 
     public int getElo(UUID playerUUID, String type) {
@@ -176,5 +182,46 @@ public class EloManager implements EloAPI {
 
     public FileConfiguration getPlayerData() {
         return playerData;
+    }
+
+    public Map<UUID, Boolean> getDisplayPreferences() {
+        return displayPreferences;
+    }
+
+    private void loadDisplayPreferences() {
+        Plugin bedWarsPlugin = Bukkit.getPluginManager().getPlugin("BedWars2023");
+        File dataFolder = new File(bedWarsPlugin.getDataFolder(), "Addons/Ranked");
+        File file = new File(dataFolder, "displays.yml");
+        if (!file.exists()) {
+            return;
+        }
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        if (!config.contains("ranks")) {
+            return;
+        }
+        for (String uuidString : config.getConfigurationSection("ranks").getKeys(false)) {
+            try {
+                UUID uuid = UUID.fromString(uuidString);
+                boolean display = config.getBoolean("ranks." + uuidString);
+                displayPreferences.put(uuid, display);
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void saveDisplayPreferences() {
+        Plugin bedWarsPlugin = Bukkit.getPluginManager().getPlugin("BedWars2023");
+        File dataFolder = new File(bedWarsPlugin.getDataFolder(), "Addons/Ranked");
+        File file = new File(dataFolder, "displays.yml");
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        for (Map.Entry<UUID, Boolean> entry : displayPreferences.entrySet()) {
+            config.set("ranks." + entry.getKey().toString(), entry.getValue());
+        }
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

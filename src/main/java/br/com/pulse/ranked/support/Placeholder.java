@@ -8,15 +8,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+import java.util.UUID;
+
 public class Placeholder extends PlaceholderExpansion {
 
     private final Main plugin;
     private final EloManager eloManager;
+    private final Map<UUID, Boolean> displayPreferences;
     Ranked4SApi api = Bukkit.getServicesManager().getRegistration(Ranked4SApi.class).getProvider();
 
-    public Placeholder(Main plugin, EloManager eloManager) {
+    public Placeholder(Main plugin, EloManager eloManager, Map<UUID, Boolean> displayPreferences) {
         this.plugin = plugin;
         this.eloManager = eloManager;
+        this.displayPreferences = displayPreferences;
     }
 
     @Override
@@ -46,11 +51,22 @@ public class Placeholder extends PlaceholderExpansion {
                 int eloDuplas = eloManager.getElo(player.getUniqueId(), "rankedduplas");
                 int eloGeral = (elo1v1 + elo2v2 + elo4v4) / 3;
                 return String.valueOf(eloGeral);
-            case "bwrank":
+            case "bwrankchat":
                 int eloGeralRank = (eloManager.getElo(player.getUniqueId(), "ranked1v1") +
                         eloManager.getElo(player.getUniqueId(), "ranked4s") +
                         eloManager.getElo(player.getUniqueId(), "ranked2v2cm")) / 3;
-                return eloManager.getRank(eloGeralRank);
+                boolean displayTag = displayPreferences.getOrDefault(player.getUniqueId(), true);
+                if (displayTag) {
+                    String rank = eloManager.getRank(eloGeralRank);
+                    return (" " + rank + " ");
+                } else {
+                    return " ";
+                }
+            case "bwrank":
+                int eloGeralRankB = (eloManager.getElo(player.getUniqueId(), "ranked1v1") +
+                        eloManager.getElo(player.getUniqueId(), "ranked4s") +
+                        eloManager.getElo(player.getUniqueId(), "ranked2v2cm")) / 3;
+                return eloManager.getRank(eloGeralRankB);
         }
 
         return null;

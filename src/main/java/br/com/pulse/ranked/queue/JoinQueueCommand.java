@@ -39,10 +39,10 @@ public class JoinQueueCommand implements CommandExecutor, Listener {
             sender.sendMessage("§cEste comando só pode ser executado por jogadores.");
             return true;
         }
-        if (!player.hasPermission("bw.vip") && bedwarsAPI.getStatsUtil().getPlayerWins(player.getUniqueId()) < 100) {
+        if (!player.hasPermission("bw.vip") && bedwarsAPI.getStatsUtil().getPlayerWins(player.getUniqueId()) < 50) {
             player.sendMessage("");
             player.sendMessage("§c§lVocê precisa ter §a§lVIP §c§l ou mais de");
-            player.sendMessage("§c§l100 WINS para entrar em uma fila");
+            player.sendMessage("§c§l50 WINS para entrar em uma fila");
             player.sendMessage("");
             return true;
         }
