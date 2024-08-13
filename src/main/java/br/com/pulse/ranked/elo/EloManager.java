@@ -3,7 +3,6 @@ package br.com.pulse.ranked.elo;
 import br.com.pulse.ranked.EloAPI;
 import com.github.syncwrld.prankedbw.bw4sbot.api.Ranked4SApi;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -52,25 +51,19 @@ public class EloManager implements EloAPI {
             newElo = 0; // Elo não pode ser negativo
         }
 
-        String oldRank = getRank(currentElo);
+        String currentRank = getRank(currentElo);
         String newRank = getRank(newElo);
 
-        Player player = Bukkit.getPlayer(playerUUID);
-        if (player != null) {
-            if (!oldRank.equalsIgnoreCase(newRank)) {
-                int oldRankPriority = getRankPriority(oldRank);
-                int newRankPriority = getRankPriority(newRank);
-                if (newRankPriority < oldRankPriority) {
-                    player.sendMessage("§c§lVocê desceu de rank!");
-                } else {
-                    player.sendMessage("§a§lVocê evoluiu de Rank!");
-                }
-                player.sendMessage("§aSeu novo rank é: " + newRank);
-                player.playSound(player.getLocation(), Sound.LEVEL_UP, 1.0f, 1.0f);
+        setElo(playerUUID, type, newElo);
+
+        // Verifica se o rank mudou e envia uma mensagem ao jogador
+        if (!currentRank.equals(newRank)) {
+            Player player = Bukkit.getPlayer(playerUUID);
+            if (player != null && player.isOnline()) {
+                player.sendMessage("§aParabéns! Você subiu para " + newRank + "!");
             }
         }
 
-        setElo(playerUUID, type, newElo);
         savePlayerData();
     }
 
@@ -104,24 +97,6 @@ public class EloManager implements EloAPI {
         } else {
             return "§b[Diamante I]";
         }
-    }
-
-    public int getRankPriority(String rank) {
-        return switch (rank) {
-            case "§4[Bronze III]" -> 1;
-            case "§4[Bronze II]" -> 2;
-            case "§4[Bronze I]" -> 3;
-            case "§8[Prata III]" -> 4;
-            case "§8[Prata II]" -> 5;
-            case "§8[Prata I]" -> 6;
-            case "§6[Ouro III]" -> 7;
-            case "§6[Ouro II]" -> 8;
-            case "§6[Ouro I]" -> 9;
-            case "§b[Diamante III]" -> 10;
-            case "§b[Diamante II]" -> 11;
-            case "§b[Diamante I]" -> 12;
-            default -> Integer.MAX_VALUE;
-        };
     }
 
     public void savePlayerData() {

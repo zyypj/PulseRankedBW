@@ -1,8 +1,7 @@
 name: PulseRankedBW
 version: '${project.version}'
 main: br.com.pulse.ranked.Main
-depend: [PRanked4sBOT]
-softdepend: [BedWars2023, PlaceholderAPI]
+depend: [PRanked4sBOT, LeafPlugins, LeafPunish, BedWars2023, PlaceholderAPI]
 commands:
   joinqueue:
     description: Entrar em uma fila
@@ -23,3 +22,5 @@ commands:
     aliases: [matchinfo, infopartida, partidainfo]
   rankdisplay:
     aliases: [displayrank, mostrarrank]
+  tournament:
+    aliases: [torneio]

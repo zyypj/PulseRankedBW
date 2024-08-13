@@ -72,7 +72,7 @@ public class QueueManager implements QueueAPI {
                     }
                 }
             }
-        }.runTaskTimer(plugin, 0, 200); // Executa a cada 10 segundos (200 ticks)
+        }.runTaskTimer(plugin, 0, 100); // Executa a cada 5 segundos (100 ticks)
     }
 
     private void startQueueTask() {
@@ -80,8 +80,12 @@ public class QueueManager implements QueueAPI {
             @Override
             public void run() {
                 for (String gameType : gameQueue.keySet()) {
-                    List<PlayerQueue> queue = new ArrayList<>(game1v1Queue.get(gameType));
-                    for (PlayerQueue playerQueue : queue) {
+                    List<PlayerQueue> queue = game1v1Queue.get(gameType);
+                    if (queue == null) {
+                        continue; // Pule para o próximo gameType se a fila for nula
+                    }
+                    List<PlayerQueue> queueCopy = new ArrayList<>(queue);
+                    for (PlayerQueue playerQueue : queueCopy) {
                         if ((System.currentTimeMillis() - playerQueue.getJoinTime()) >= 300000) { // 5 minutos
                             leaveQueue(playerQueue.getPlayer());
                             continue;
@@ -90,13 +94,13 @@ public class QueueManager implements QueueAPI {
                     }
                 }
             }
-        }.runTaskTimer(plugin, 0, 200); // Executa a cada 10 segundos (200 ticks)
+        }.runTaskTimer(plugin, 0, 100); // Executa a cada 5 segundos (100 ticks)
     }
 
     private void searchForBalancedMatch(PlayerQueue playerQueue) {
         int baseElo = playerQueue.getElo();
         int timeInQueue = (int) ((System.currentTimeMillis() - playerQueue.getJoinTime()) / 1000);
-        int range = (timeInQueue / 10) * 50;
+        int range = (timeInQueue / 5) * 50; // Aumenta a cada 5 segundos
 
         int minElo = Math.max(baseElo - range, 0);
         int maxElo = baseElo + range;
@@ -110,7 +114,7 @@ public class QueueManager implements QueueAPI {
             }
         }
 
-        if (timeInQueue % 10 == 0) { // Enviar mensagem a cada 10 segundos
+        if (timeInQueue % 5 == 0) { // Enviar mensagem a cada 5 segundos
             playerQueue.getPlayer().sendMessage("");
             playerQueue.getPlayer().sendMessage("§c§lPulse Ranked");
             playerQueue.getPlayer().sendMessage("§fProcurando partida...");
@@ -123,7 +127,7 @@ public class QueueManager implements QueueAPI {
     private void searchForMatch(PlayerQueue playerQueue, String gameType) {
         int baseElo = playerQueue.getElo();
         int timeInQueue = (int) ((System.currentTimeMillis() - playerQueue.getJoinTime()) / 1000);
-        int range = (timeInQueue / 10) * 50;
+        int range = (timeInQueue / 5) * 50; // Aumenta a cada 5 segundos
 
         int minElo = Math.max(baseElo - range, 0);
         int maxElo = baseElo + range;
@@ -137,9 +141,9 @@ public class QueueManager implements QueueAPI {
             }
         }
 
-        if (timeInQueue % 10 == 0) { // Enviar mensagem a cada 10 segundos
-            playerQueue.getPlayer().sendMessage("");
+        if (timeInQueue % 5 == 0) { // Enviar mensagem a cada 5 segundos
             playerQueue.getPlayer().sendMessage("§c§lPulse Ranked");
+            playerQueue.getPlayer().sendMessage("");
             playerQueue.getPlayer().sendMessage("§fProcurando partida...");
             playerQueue.getPlayer().sendMessage("§fElo: §5[" + minElo + "§f~§5" + maxElo + "]");
             playerQueue.getPlayer().sendMessage("");

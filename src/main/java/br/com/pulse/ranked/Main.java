@@ -3,6 +3,7 @@ package br.com.pulse.ranked;
 import br.com.pulse.ranked.elo.EloListener;
 import br.com.pulse.ranked.elo.EloManager;
 import br.com.pulse.ranked.elo.commands.EloCommand;
+import br.com.pulse.ranked.misc.ListenersMisc;
 import br.com.pulse.ranked.misc.RankCommand;
 import br.com.pulse.ranked.misc.RankDisplayCommand;
 import br.com.pulse.ranked.misc.fourS.ForgeManager;
@@ -14,10 +15,13 @@ import br.com.pulse.ranked.misc.listeners.FireballListener;
 import br.com.pulse.ranked.misc.mvp.MVPCommand;
 import br.com.pulse.ranked.misc.mvp.MVPListener;
 import br.com.pulse.ranked.misc.mvp.MVPManager;
+import br.com.pulse.ranked.misc.tournament.DiamondCommand;
 import br.com.pulse.ranked.queue.JoinQueueCommand;
 import br.com.pulse.ranked.queue.LeaveQueueCommand;
 import br.com.pulse.ranked.queue.QueueManager;
 import br.com.pulse.ranked.support.Placeholder;
+import com.github.syncwrld.prankedbw.bw4sbot.PRankedSpigotPlugin;
+import com.github.syncwrld.prankedbw.bw4sbot.manager.GameManager;
 import com.tomkeuper.bedwars.api.BedWars;
 import com.tomkeuper.bedwars.api.server.VersionSupport;
 import org.bukkit.Bukkit;
@@ -113,17 +117,19 @@ public class Main extends JavaPlugin {
         queueManager = new QueueManager(this, eloManager);
         MVPManager mvpManager = new MVPManager();
 
+        GameManager gameManager = JavaPlugin.getPlugin(PRankedSpigotPlugin.class).getGameManager();
         registerEvents(new JoinQueueCommand(queueManager, eloManager), new EloListener(eloManager, this, playerData),
         new AntiLadder(), new ForgeManager(this), new MVPListener(this, mvpManager, eloManager),
-                new TeamManager(), new MatchListener(this), new FireballListener());
+                new TeamManager(), new MatchListener(this), new FireballListener(), new ListenersMisc(this, gameManager));
 
         getCommand("joinqueue").setExecutor(new JoinQueueCommand(queueManager, eloManager));
         getCommand("leavequeue").setExecutor(new LeaveQueueCommand(queueManager));
-        getCommand("rank").setExecutor(new RankCommand(eloManager));
-        getCommand("elo").setExecutor(new EloCommand(eloManager));
+        getCommand("rank").setExecutor(new RankCommand(eloManager, eloManager.getDisplayPreferences()));
+        getCommand("elo").setExecutor(new EloCommand(eloManager, eloManager.getDisplayPreferences()));
         getCommand("mvp").setExecutor(new MVPCommand(eloManager));
         getCommand("partida").setExecutor(new MatchCommand(this));
         getCommand("rankdisplay").setExecutor(new RankDisplayCommand(eloManager));
+        getCommand("tournament").setExecutor(new DiamondCommand());
 
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             Bukkit.getScheduler().runTaskLater(this, () ->

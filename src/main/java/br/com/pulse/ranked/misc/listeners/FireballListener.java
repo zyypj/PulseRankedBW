@@ -14,7 +14,6 @@ import com.tomkeuper.bedwars.arena.LastHit;
 import com.tomkeuper.bedwars.arena.team.BedWarsTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
@@ -39,24 +38,24 @@ public class FireballListener implements Listener {
 
     BedWars bedwarsAPI = Bukkit.getServicesManager().getRegistration(BedWars.class).getProvider();
 
-    private final double fireballExplosionSize, fireballHorizontal, fireballVertical;
-    private final double damageSelf, damageEnemy, damageTeammates;
-    private final double fireballSpeedMultiplier, fireballCooldown;
-    private final boolean fireballMakeFire;
+    private final double defaultFireballExplosionSize, defaultFireballHorizontal, defaultFireballVertical;
+    private final double defaultDamageSelf, defaultDamageEnemy, defaultDamageTeammates;
+    private final double defaultFireballSpeedMultiplier, defaultFireballCooldown;
+    private final boolean defaultFireballMakeFire;
 
     public FireballListener() {
-        fireballExplosionSize = 3;
-        fireballHorizontal = 1.10 * -1;
-        fireballVertical = 0.80;
+        defaultFireballExplosionSize = 3;
+        defaultFireballHorizontal = 2.5 * -1;
+        defaultFireballVertical = 0.5;
 
-        damageSelf = 0.5;
-        damageEnemy = 0.5;
-        damageTeammates = 0.5;
+        defaultDamageSelf = 2;
+        defaultDamageEnemy = 1.0;
+        defaultDamageTeammates = 1.0;
 
-        fireballSpeedMultiplier = 3.5;
-        fireballCooldown = 0.5;
+        defaultFireballSpeedMultiplier = 4.0;
+        defaultFireballCooldown = 0.5;
 
-        fireballMakeFire = true;
+        defaultFireballMakeFire = true;
     }
 
     @EventHandler
@@ -73,33 +72,63 @@ public class FireballListener implements Listener {
             IArena arena = Arena.getArenaByPlayer(player);
             String group = arena.getGroup();
 
+            double fireballExplosionSize, fireballHorizontal, fireballVertical;
+            double damageSelf, damageEnemy, damageTeammates;
+            double fireballSpeedMultiplier, fireballCooldown;
+            boolean fireballMakeFire;
+
+            if (group.startsWith("Ranked") || group.startsWith("CxC")) {
+                fireballExplosionSize = 3;
+                fireballHorizontal = 1.10 * -1;
+                fireballVertical = 0.80;
+
+                damageSelf = 0.5;
+                damageEnemy = 0.5;
+                damageTeammates = 0.5;
+
+                fireballSpeedMultiplier = 3.5;
+                fireballCooldown = 0.5;
+
+                fireballMakeFire = true;
+            } else {
+                fireballExplosionSize = defaultFireballExplosionSize;
+                fireballHorizontal = defaultFireballHorizontal;
+                fireballVertical = defaultFireballVertical;
+
+                damageSelf = defaultDamageSelf;
+                damageEnemy = defaultDamageEnemy;
+                damageTeammates = defaultDamageTeammates;
+
+                fireballSpeedMultiplier = defaultFireballSpeedMultiplier;
+                fireballCooldown = defaultFireballCooldown;
+
+                fireballMakeFire = defaultFireballMakeFire;
+            }
+
             if (arena.getStatus() != GameState.playing || handItem.getType() != Main.nms.materialFireball()) {
                 return;
             }
 
-            if (group.startsWith("Ranked") || group.startsWith("CxC")) {
+            e.setCancelled(true);
 
-                e.setCancelled(true);
-
-                long cooldown = (long) (fireballCooldown * 1000);
-                long timeDifference = System.currentTimeMillis() - arena.getFireballCooldowns().getOrDefault(player.getUniqueId(), 0L);
-                if (timeDifference <= cooldown) {
-                    if (fireballCooldown >= 1.0) {
-                        player.sendMessage(Language.getMsg(player, Messages.ARENA_FIREBALL_COOLDOWN)
-                                .replace("%bw_cooldown%", String.valueOf((cooldown - timeDifference)/1000)));
-                    }
-                    return;
+            long cooldown = (long) (fireballCooldown * 1000);
+            long timeDifference = System.currentTimeMillis() - arena.getFireballCooldowns().getOrDefault(player.getUniqueId(), 0L);
+            if (timeDifference <= cooldown) {
+                if (fireballCooldown >= 1.0) {
+                    player.sendMessage(Language.getMsg(player, Messages.ARENA_FIREBALL_COOLDOWN)
+                            .replace("%bw_cooldown%", String.valueOf((cooldown - timeDifference) / 1000)));
                 }
-
-                arena.getFireballCooldowns().put(player.getUniqueId(), System.currentTimeMillis());
-                Fireball fireball = player.launchProjectile(Fireball.class);
-                Vector direction = player.getEyeLocation().getDirection();
-                fireball = Main.nms.setFireballDirection(fireball, direction);
-                fireball.setVelocity(fireball.getDirection().multiply(fireballSpeedMultiplier));
-                fireball.setYield((float) fireballExplosionSize);
-                fireball.setMetadata("bw2023", new FixedMetadataValue(Main.plugin, "ceva"));
-                Main.nms.minusAmount(player, handItem, 1);
+                return;
             }
+
+            arena.getFireballCooldowns().put(player.getUniqueId(), System.currentTimeMillis());
+            Fireball fireball = player.launchProjectile(Fireball.class);
+            Vector direction = player.getEyeLocation().getDirection();
+            fireball = Main.nms.setFireballDirection(fireball, direction);
+            fireball.setVelocity(fireball.getDirection().multiply(fireballSpeedMultiplier));
+            fireball.setYield((float) fireballExplosionSize);
+            fireball.setMetadata("bw2023", new FixedMetadataValue(Main.plugin, "ceva"));
+            Main.nms.minusAmount(player, handItem, 1);
         }
     }
 
@@ -123,17 +152,17 @@ public class FireballListener implements Listener {
         }
 
         String group = arena.getGroup();
-        if (!(group.startsWith("Ranked") || group.startsWith("CxC"))) {
-            return;
-        }
+        boolean isRankedOrCxC = group.startsWith("Ranked") || group.startsWith("CxC");
 
-        Vector vector = location.toVector();
-        World world = location.getWorld();
-        if (world == null) {
-            return;
-        }
+        double fireballExplosionSize = isRankedOrCxC ? 3 : defaultFireballExplosionSize;
+        double horizontal = isRankedOrCxC ? 1.10 * -1 : defaultFireballHorizontal;
+        double vertical = isRankedOrCxC ? 0.80 : defaultFireballVertical;
 
-        Collection<Entity> nearbyEntities = world.getNearbyEntities(location, fireballExplosionSize, fireballExplosionSize, fireballExplosionSize);
+        double damageSelf = isRankedOrCxC ? 0.5 : defaultDamageSelf;
+        double damageEnemy = isRankedOrCxC ? 0.5 : defaultDamageEnemy;
+        double damageTeammates = isRankedOrCxC ? 0.5 : defaultDamageTeammates;
+
+        Collection<Entity> nearbyEntities = location.getWorld().getNearbyEntities(location, fireballExplosionSize, fireballExplosionSize, fireballExplosionSize);
 
         for (Entity entity : nearbyEntities) {
             if (!(entity instanceof Player player)) {
@@ -152,17 +181,18 @@ public class FireballListener implements Listener {
             }
             BedWarsTeam.reSpawnInvulnerability.remove(playerUUID);
 
+            Vector vector = location.toVector();
             Vector playerVector = player.getLocation().toVector();
             Vector normalizedVector = vector.subtract(playerVector).normalize();
-            Vector horizontalVector = normalizedVector.multiply(fireballHorizontal);
+            Vector horizontalVector = normalizedVector.multiply(horizontal);
             double y = normalizedVector.getY();
             if (y < 0) {
                 y += 1.5;
             }
             if (y <= 0.5) {
-                y = fireballVertical * 1.5; // kb for not jumping
+                y = vertical * 1.5; // kb for not jumping
             } else {
-                y = y * fireballVertical * 1.5; // kb for jumping
+                y = y * vertical * 1.5; // kb for jumping
             }
             player.setVelocity(horizontalVector.setY(y));
 
@@ -173,6 +203,7 @@ public class FireballListener implements Listener {
             } else {
                 new LastHit(player, source, System.currentTimeMillis());
             }
+
             if (player.equals(source)) {
                 if (damageSelf > 0) {
                     player.damage(damageSelf); // damage shooter
@@ -190,43 +221,62 @@ public class FireballListener implements Listener {
         }
     }
 
-    private void damagePlayer(Player player, double damageTeammates) {
-        if (damageTeammates > 0) {
+    private void damagePlayer(Player player, double damageAmount) {
+        if (damageAmount > 0) {
             EntityDamageEvent damageEvent = new EntityDamageEvent(
                     player,
                     EntityDamageEvent.DamageCause.ENTITY_EXPLOSION,
-                    new EnumMap<>(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, damageTeammates)),
-                    new EnumMap<>(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, Functions.constant(damageTeammates)))
+                    new EnumMap<>(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, damageAmount)),
+                    new EnumMap<>(ImmutableMap.of(EntityDamageEvent.DamageModifier.BASE, Functions.constant(damageAmount)))
             );
             player.setLastDamageCause(damageEvent);
-            player.damage(damageTeammates); // damage teammates
+            player.damage(damageAmount); // damage teammates
         }
     }
 
     @EventHandler
-    public void fireballDirectHit(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof Fireball) || !(e.getEntity() instanceof Player player)) {
+    public void explosionPrime(ExplosionPrimeEvent e) {
+        Entity entity = e.getEntity();
+        if (!(entity instanceof Fireball) || !entity.hasMetadata("bw2023")) {
             return;
         }
 
-        if (!Arena.isInArena(player)) {
-            return;
-        }
-        e.setCancelled(true);
+        e.setFire(defaultFireballMakeFire);
     }
 
     @EventHandler
-    public void fireballPrime(ExplosionPrimeEvent e) {
-        if (!(e.getEntity() instanceof Fireball fireball)) {
+    public void onFireballDamage(EntityDamageByEntityEvent e) {
+        if (!(e.getDamager() instanceof Fireball fireball) || !(e.getEntity() instanceof Player player) || !(fireball.getShooter() instanceof Player shooter)) {
             return;
         }
 
-        ProjectileSource shooter = fireball.getShooter();
-
-        if (!(shooter instanceof Player) || !Arena.isInArena((Player) shooter)) {
+        IArena arena = Arena.getArenaByPlayer(shooter);
+        if (arena == null) {
             return;
         }
-        e.setFire(fireballMakeFire);
+
+        String group = arena.getGroup();
+        boolean isRankedOrCxC = group.startsWith("Ranked") || group.startsWith("CxC");
+
+        double fireballExplosionSize = isRankedOrCxC ? 3 : defaultFireballExplosionSize;
+        double damageSelf = isRankedOrCxC ? 0.5 : defaultDamageSelf;
+        double damageEnemy = isRankedOrCxC ? 0.25 : defaultDamageEnemy;
+        double damageTeammates = isRankedOrCxC ? 0.25 : defaultDamageTeammates;
+
+        ITeam playerTeam = arena.getTeam(player);
+        ITeam shooterTeam = arena.getTeam(shooter);
+
+        if (playerTeam != null && playerTeam.equals(shooterTeam)) {
+            e.setDamage(damageTeammates);
+        } else if (player.equals(shooter)) {
+            e.setDamage(damageSelf);
+        } else {
+            e.setDamage(damageEnemy);
+        }
+
+        // Reduz o dano de queda pela metade
+        if (e.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            e.setDamage(e.getDamage() / 2);
+        }
     }
-
 }

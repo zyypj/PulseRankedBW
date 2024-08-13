@@ -51,22 +51,18 @@ public class Placeholder extends PlaceholderExpansion {
                 int eloDuplas = eloManager.getElo(player.getUniqueId(), "rankedduplas");
                 int eloGeral = (elo1v1 + elo2v2 + elo4v4) / 3;
                 return String.valueOf(eloGeral);
-            case "bwrankchat":
+            case "bwrank":
                 int eloGeralRank = (eloManager.getElo(player.getUniqueId(), "ranked1v1") +
                         eloManager.getElo(player.getUniqueId(), "ranked4s") +
                         eloManager.getElo(player.getUniqueId(), "ranked2v2cm")) / 3;
                 boolean displayTag = displayPreferences.getOrDefault(player.getUniqueId(), true);
                 if (displayTag) {
-                    String rank = eloManager.getRank(eloGeralRank);
-                    return (" " + rank + " ");
+                    return (eloManager.getRank(eloGeralRank));
                 } else {
-                    return " ";
+                    return "§c[Oculto]";
                 }
-            case "bwrank":
-                int eloGeralRankB = (eloManager.getElo(player.getUniqueId(), "ranked1v1") +
-                        eloManager.getElo(player.getUniqueId(), "ranked4s") +
-                        eloManager.getElo(player.getUniqueId(), "ranked2v2cm")) / 3;
-                return eloManager.getRank(eloGeralRankB);
+            case "rank_status":
+                return eloManager.getDisplayPreferences().getOrDefault(player.getUniqueId(), true) ? "Ativado" : "Desativado";
         }
 
         return null;

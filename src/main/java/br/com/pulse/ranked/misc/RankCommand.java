@@ -8,16 +8,19 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class RankCommand implements CommandExecutor {
 
     private final EloManager eloManager;
+    private final Map<UUID, Boolean> displayPreferences;
 
     Ranked4SApi api = Bukkit.getServicesManager().getRegistration(Ranked4SApi.class).getProvider();
 
-    public RankCommand(EloManager eloManager) {
+    public RankCommand(EloManager eloManager, Map<UUID, Boolean> displayPreferences) {
         this.eloManager = eloManager;
+        this.displayPreferences = displayPreferences;
     }
 
     @Override
@@ -41,6 +44,14 @@ public class RankCommand implements CommandExecutor {
         if (args.length == 1) {
             Player target = Bukkit.getPlayer(args[0]);
             UUID targetUUID = target.getUniqueId();
+
+            boolean displayTag = displayPreferences.getOrDefault(target.getUniqueId(), true);
+
+            if (!displayTag) {
+                player.sendMessage("§cEsse jogador está com a visibilidade de rank desativada!");
+                return true;
+            }
+
             int eloSolo = eloManager.getElo(targetUUID, "rankedsolo");
             int elo1v1 = eloManager.getElo(targetUUID, "ranked1v1");
             int elo4v4 = api.getElo(target);

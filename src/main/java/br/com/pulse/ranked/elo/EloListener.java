@@ -117,8 +117,8 @@ public class EloListener implements Listener {
             for (UUID loserUUID : loserTeam) {
                 Player loser = Bukkit.getPlayer(loserUUID);
                 int loserEloPerca = 35; // Gera um número aleatório de 20 a 30
-                eloManager.addElo(loser.getUniqueId(), loserEloPerca, group.toLowerCase());
-                loser.sendMessage("§c-" + -loserEloPerca + " Ranked Elo (Derrota)");
+                eloManager.addElo(loser.getUniqueId(), -loserEloPerca, group.toLowerCase());
+                loser.sendMessage("§c-" + loserEloPerca + " Ranked Elo (Derrota)");
                 loser.playSound(loser.getLocation(), Sound.LEVEL_UP, 1, 1);
             }
         }
@@ -154,7 +154,7 @@ public class EloListener implements Listener {
         }
         // Temporarily blocked items
         if (group.equalsIgnoreCase("Ranked1v1") || group.equalsIgnoreCase("Ranked4s")) {
-            if (!teamB.isBedDestroyed() || !teamA.isBedDestroyed()) {
+            if (!teamB.isBedDestroyed() && !teamA.isBedDestroyed()) {
                 if (identifier.equals("potions-category.category-content.invisibility") ||
                         identifier.equals("potions-category.category-content.jump-potion") ||
                         identifier.equals("potions-category.category-content.speed-potion") ||

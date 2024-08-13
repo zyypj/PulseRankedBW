@@ -84,14 +84,14 @@
       <dependency>
           <groupId>com.tomkeuper.bedwars</groupId>
           <artifactId>bedwars-plugin</artifactId>
-          <version>1.1.0</version>
+          <version>1.2.0</version>
           <scope>system</scope>
           <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/BedWars2023.jar</systemPath>
       </dependency>
       <dependency>
           <groupId>com.tomkeuper.bedwars</groupId>
           <artifactId>bedwars-api</artifactId>
-          <version>1.1.0</version>
+          <version>1.2.0</version>
           <scope>system</scope>
           <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/BedWars2023.jar</systemPath>
       </dependency>
@@ -108,6 +108,27 @@
           <version>1.0</version>
           <scope>system</scope>
           <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/PRanked.jar</systemPath>
+      </dependency>
+      <dependency>
+          <groupId>leaf</groupId>
+          <artifactId>LeafPlugins</artifactId>
+          <version>1.0</version>
+          <scope>system</scope>
+          <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/LeafPlugins.jar</systemPath>
+      </dependency>
+      <dependency>
+          <groupId>leafP</groupId>
+          <artifactId>LeafPunish</artifactId>
+          <version>1.0</version>
+          <scope>system</scope>
+          <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/LeafPunish.jar</systemPath>
+      </dependency>
+      <dependency>
+          <groupId>decentHologram</groupId>
+          <artifactId>DecentHologram</artifactId>
+          <version>1.0</version>
+          <scope>system</scope>
+          <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/DecentHolograms.jar</systemPath>
       </dependency>
   </dependencies>
 </project>
