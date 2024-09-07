@@ -20,8 +20,6 @@ import br.com.pulse.ranked.queue.JoinQueueCommand;
 import br.com.pulse.ranked.queue.LeaveQueueCommand;
 import br.com.pulse.ranked.queue.QueueManager;
 import br.com.pulse.ranked.support.Placeholder;
-import com.github.syncwrld.prankedbw.bw4sbot.PRankedSpigotPlugin;
-import com.github.syncwrld.prankedbw.bw4sbot.manager.GameManager;
 import com.tomkeuper.bedwars.api.BedWars;
 import com.tomkeuper.bedwars.api.server.VersionSupport;
 import org.bukkit.Bukkit;
@@ -117,10 +115,9 @@ public class Main extends JavaPlugin {
         queueManager = new QueueManager(this, eloManager);
         MVPManager mvpManager = new MVPManager();
 
-        GameManager gameManager = JavaPlugin.getPlugin(PRankedSpigotPlugin.class).getGameManager();
         registerEvents(new JoinQueueCommand(queueManager, eloManager), new EloListener(eloManager, this, playerData),
         new AntiLadder(), new ForgeManager(this), new MVPListener(this, mvpManager, eloManager),
-                new TeamManager(), new MatchListener(this), new FireballListener(), new ListenersMisc(this, gameManager));
+                new TeamManager(), new MatchListener(this), new FireballListener(), new ListenersMisc(this));
 
         getCommand("joinqueue").setExecutor(new JoinQueueCommand(queueManager, eloManager));
         getCommand("leavequeue").setExecutor(new LeaveQueueCommand(queueManager));

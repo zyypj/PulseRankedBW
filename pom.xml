@@ -2,133 +2,133 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>br.com.pulse</groupId>
-  <artifactId>PulseRankedBW</artifactId>
-  <version>3.0</version>
-  <packaging>jar</packaging>
+    <groupId>br.com.pulse</groupId>
+    <artifactId>PulseRankedBW</artifactId>
+    <version>3.0</version>
+    <packaging>jar</packaging>
 
-  <name>PulseRankedBW</name>
+    <name>PulseRankedBW</name>
 
-  <properties>
-    <java.version>17</java.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <properties>
+        <java.version>17</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
-        <configuration>
-          <source>${java.version}</source>
-          <target>${java.version}</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.4</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
-  </build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
 
-  <repositories>
-      <repository>
-          <id>spigotmc-repo</id>
-          <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-      </repository>
-      <repository>
-          <id>sonatype</id>
-          <url>https://oss.sonatype.org/content/groups/public/</url>
-      </repository>
-      <repository>
-          <id>placeholderapi</id>
-          <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
-      </repository>
-      <repository>
-          <id>bedwars2023-releases</id>
-          <url>https://repo.tomkeuper.com/repository/releases/</url>
-      </repository>
-  </repositories>
+    <repositories>
+        <repository>
+            <id>spigotmc-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
+        <repository>
+            <id>bedwars2023-releases</id>
+            <url>https://repo.tomkeuper.com/repository/releases/</url>
+        </repository>
+    </repositories>
 
-  <dependencies>
-      <dependency>
-          <groupId>org.spigotmc</groupId>
-          <artifactId>spigot-api</artifactId>
-          <version>1.8.8-R0.1-SNAPSHOT</version>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>me.clip</groupId>
-          <artifactId>placeholderapi</artifactId>
-          <version>2.11.5</version>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>com.tomkeuper.bedwars</groupId>
-          <artifactId>bedwars-plugin</artifactId>
-          <version>1.2.0</version>
-          <scope>system</scope>
-          <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/BedWars2023.jar</systemPath>
-      </dependency>
-      <dependency>
-          <groupId>com.tomkeuper.bedwars</groupId>
-          <artifactId>bedwars-api</artifactId>
-          <version>1.2.0</version>
-          <scope>system</scope>
-          <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/BedWars2023.jar</systemPath>
-      </dependency>
-      <dependency>
-          <groupId>me.agent.teamselector</groupId>
-          <artifactId>api</artifactId>
-          <version>2.0</version>
-          <scope>system</scope>
-          <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/TeamSelector.jar</systemPath>
-      </dependency>
-      <dependency>
-          <groupId>com.github.syncwrld</groupId>
-          <artifactId>api</artifactId>
-          <version>1.0</version>
-          <scope>system</scope>
-          <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/PRanked.jar</systemPath>
-      </dependency>
-      <dependency>
-          <groupId>leaf</groupId>
-          <artifactId>LeafPlugins</artifactId>
-          <version>1.0</version>
-          <scope>system</scope>
-          <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/LeafPlugins.jar</systemPath>
-      </dependency>
-      <dependency>
-          <groupId>leafP</groupId>
-          <artifactId>LeafPunish</artifactId>
-          <version>1.0</version>
-          <scope>system</scope>
-          <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/LeafPunish.jar</systemPath>
-      </dependency>
-      <dependency>
-          <groupId>decentHologram</groupId>
-          <artifactId>DecentHologram</artifactId>
-          <version>1.0</version>
-          <scope>system</scope>
-          <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/DecentHolograms.jar</systemPath>
-      </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.11.5</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tomkeuper.bedwars</groupId>
+            <artifactId>bedwars-api</artifactId>
+            <version>1.2.0</version>
+            <scope>system</scope>
+            <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/BedWars2023.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>me.agent.teamselector</groupId>
+            <artifactId>api</artifactId>
+            <version>2.0</version>
+            <scope>system</scope>
+            <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/TeamSelector.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.kasp</groupId>
+            <artifactId>rbw</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/RankedBot.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>leaf</groupId>
+            <artifactId>LeafPlugins</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/LeafPlugins.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>leafP</groupId>
+            <artifactId>LeafPunish</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/LeafPunish.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>decentHologram</groupId>
+            <artifactId>DecentHologram</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>C:/Users/zyypj/Documents/New Projects/Dependency/DecentHolograms.jar</systemPath>
+        </dependency>
+    </dependencies>
 </project>
