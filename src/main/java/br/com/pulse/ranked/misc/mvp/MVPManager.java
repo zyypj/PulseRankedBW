@@ -9,9 +9,11 @@ import java.util.UUID;
 
 public class MVPManager {
     private final Map<IArena, Map<UUID, Integer>> arenaMvpPoints;
+    public static MVPManager mvpManager;
 
     public MVPManager() {
         this.arenaMvpPoints = new HashMap<>();
+        mvpManager = this;
     }
 
     public void addFinalKillsPoints(Player player, IArena arena) {
@@ -49,5 +51,9 @@ public class MVPManager {
 
     public void reset(IArena arena) {
         arenaMvpPoints.remove(arena);
+    }
+
+    public static MVPManager getMvpManager() {
+        return mvpManager;
     }
 }

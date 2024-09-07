@@ -5,6 +5,7 @@ import com.kasp.rbw.api.RankedBedwarsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -47,13 +48,14 @@ public class MatchStats {
 		return matchsConfig;
 	}
 	
-	public void saveMatch(String id, String map, String group, List<String> team1, List<String> team2, List<String> topKills, List<String> topBedBreaking) {
+	public void saveMatch(String id, String map, String group, List<String> team1, List<String> team2, Player mvp, List<String> topKills, List<String> topBedBreaking) {
 		
 		matchsConfig.set(id + ".Mapa", map);
 		matchsConfig.set(id + ".Modo", group);
 		matchsConfig.set(id + ".Data", new SimpleDateFormat("dd/MM/yy").format(new Date()));
 		matchsConfig.set(id + ".Time1", team1);
 		matchsConfig.set(id + ".Time2", team2);
+		matchsConfig.set(id + ".Mvp", mvp);
 		matchsConfig.set(id + ".TopKillsFinais", topKills);
 		matchsConfig.set(id + ".TopBedBreaking", topBedBreaking);
 		

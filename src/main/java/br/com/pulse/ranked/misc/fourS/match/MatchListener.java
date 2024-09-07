@@ -1,6 +1,7 @@
 package br.com.pulse.ranked.misc.fourS.match;
 
 import br.com.pulse.ranked.Main;
+import br.com.pulse.ranked.misc.mvp.MVPManager;
 import com.tomkeuper.bedwars.api.arena.GameState;
 import com.tomkeuper.bedwars.api.arena.IArena;
 import com.tomkeuper.bedwars.api.arena.team.ITeam;
@@ -13,20 +14,22 @@ import org.bukkit.event.Listener;
 import java.util.*;
 
 public class MatchListener implements Listener {
-	
+
 	private final MatchStats matchStats;
+	private final MVPManager mvpManager;
 	private List<String> team1;
 	private List<String> team2;
 	private String id;
-	
-	public MatchListener(Main plugin) {
-		this.matchStats = new MatchStats(plugin);
+
+	public MatchListener() {
+		this.matchStats = new MatchStats(Main.getInstance());
+		this.mvpManager = MVPManager.getMvpManager();
 	}
-	
+
 	@EventHandler
 	public void gameStart(GameStateChangeEvent e) {
 		IArena arena = e.getArena();
-		
+
 		if (e.getNewState().equals(GameState.playing)) {
 			if (arena.getGroup().startsWith("Ranked")) {
 				team1 = new ArrayList<>();
@@ -62,7 +65,7 @@ public class MatchListener implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void gameEnd(GameEndEvent e) {
 		IArena arena = e.getArena();
@@ -106,15 +109,17 @@ public class MatchListener implements Listener {
 
 			List<String> topKills = matchStats.getTopKills(playerKills);
 			List<String> topBedBreaking = matchStats.getTopBedBreaking(playerBedsDestroyed);
+			Player mvp = mvpManager.determineMVP(arena);
 
 			// Log para verificar os dados que estão sendo salvos
 			System.out.println("Map: " + map);
 			System.out.println("Team 1: " + team1);
 			System.out.println("Team 2: " + team2);
+			System.out.println("Mvp: " + mvp);
 			System.out.println("Top Kills Finais: " + topKills);
 			System.out.println("Top Bed Breaking: " + topBedBreaking);
 
-			matchStats.saveMatch(id + "-" + currentlyMatch, map, group, team1, team2, topKills, topBedBreaking);
+			matchStats.saveMatch(id + "-" + currentlyMatch, map, group, team1, team2, mvp, topKills, topBedBreaking);
 		}
 	}
 }

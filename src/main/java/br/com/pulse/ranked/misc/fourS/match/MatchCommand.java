@@ -26,7 +26,7 @@ public class MatchCommand implements CommandExecutor {
 
         Player player = (Player) sender;
 
-        if (!player.hasPermission("bw.helper")) {
+        if (!player.hasPermission("match.view")) {
             player.sendMessage("§cComando não encontrado ou você não tem permissão!");
             return true;
         }
@@ -36,8 +36,7 @@ public class MatchCommand implements CommandExecutor {
             return true;
         }
 
-        String matchIdN = args[0];
-        String matchId = "bw4s-" + matchIdN;
+        String matchId = args[0];
 
         // Carregar os dados da partida
         matchStats.reloadConfig();
@@ -49,6 +48,7 @@ public class MatchCommand implements CommandExecutor {
             String date = config.getString(matchId + ".Data");
             List<String> team1 = config.getStringList(matchId + ".Time1");
             List<String> team2 = config.getStringList(matchId + ".Time2");
+            String mvp = config.getString(matchId, ".Mvp");
             List<String> topKills = config.getStringList(matchId + ".TopKillsFinais");
             List<String> topBedBreaking = config.getStringList(matchId + ".TopBedBreaking");
 
@@ -61,6 +61,7 @@ public class MatchCommand implements CommandExecutor {
             player.sendMessage("§7Data: §5" + date);
 
             player.sendMessage("");
+            player.sendMessage("§7MVP: §5" + mvp);
             player.sendMessage("§9Time Azul:");
             for (String member : team1) {
                 player.sendMessage("§7- §9" + member);

@@ -117,7 +117,7 @@ public class Main extends JavaPlugin {
 
         registerEvents(new JoinQueueCommand(queueManager, eloManager), new EloListener(eloManager, this, playerData),
         new AntiLadder(), new ForgeManager(this), new MVPListener(this, mvpManager, eloManager),
-                new TeamManager(), new MatchListener(this), new FireballListener(), new ListenersMisc(this));
+                new TeamManager(), new MatchListener(), new FireballListener(), new ListenersMisc(this));
 
         getCommand("joinqueue").setExecutor(new JoinQueueCommand(queueManager, eloManager));
         getCommand("leavequeue").setExecutor(new LeaveQueueCommand(queueManager));
