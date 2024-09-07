@@ -47,9 +47,10 @@ public class MatchStats {
 		return matchsConfig;
 	}
 	
-	public void saveMatch(String id, String map, List<String> team1, List<String> team2, List<String> topKills, List<String> topBedBreaking) {
+	public void saveMatch(String id, String map, String group, List<String> team1, List<String> team2, List<String> topKills, List<String> topBedBreaking) {
 		
 		matchsConfig.set(id + ".Mapa", map);
+		matchsConfig.set(id + ".Modo", group);
 		matchsConfig.set(id + ".Data", new SimpleDateFormat("dd/MM/yy").format(new Date()));
 		matchsConfig.set(id + ".Time1", team1);
 		matchsConfig.set(id + ".Time2", team2);

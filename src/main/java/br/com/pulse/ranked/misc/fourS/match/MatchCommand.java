@@ -45,6 +45,7 @@ public class MatchCommand implements CommandExecutor {
         System.out.println(config);
         if (config.contains(matchId)) {
             String map = config.getString(matchId + ".Mapa");
+            String group = config.getString(matchId + ".Modo");
             String date = config.getString(matchId + ".Data");
             List<String> team1 = config.getStringList(matchId + ".Time1");
             List<String> team2 = config.getStringList(matchId + ".Time2");
@@ -55,6 +56,8 @@ public class MatchCommand implements CommandExecutor {
             player.sendMessage("");
             player.sendMessage("§7§lInformações da Partida §5§l" + matchId);
             player.sendMessage("§7Mapa: §5" + map);
+            player.sendMessage("§7Modo: §c" + group);
+            player.sendMessage("");
             player.sendMessage("§7Data: §5" + date);
 
             player.sendMessage("");

@@ -66,6 +66,7 @@ public class MatchListener implements Listener {
 	public void gameEnd(GameEndEvent e) {
 		IArena arena = e.getArena();
 		String map = arena.getDisplayName();
+		String group = arena.getGroup();
 		
 		if (arena.getGroup().equalsIgnoreCase("Ranked4s")) {
 			Map<String, Integer> playerKills = new HashMap<>();
@@ -88,13 +89,13 @@ public class MatchListener implements Listener {
 			List<String> topBedBreaking = matchStats.getTopBedBreaking(playerBedsDestroyed);
 			
 			// Log para verificar os dados que estão sendo salvos
-			System.out.println("Mapa: " + map);
+			System.out.println("Map: " + map);
 			System.out.println("Team 1: " + team1);
 			System.out.println("Team 2: " + team2);
 			System.out.println("Top Kills Finais: " + topKills);
 			System.out.println("Top Bed Breaking: " + topBedBreaking);
 			
-			matchStats.saveMatch(UUID.randomUUID().toString(), map, team1, team2, topKills, topBedBreaking);
+			matchStats.saveMatch(UUID.randomUUID().toString(), map, group, team1, team2, topKills, topBedBreaking);
 		}
 	}
 }
