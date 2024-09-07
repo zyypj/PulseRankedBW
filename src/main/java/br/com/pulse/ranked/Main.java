@@ -149,6 +149,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         eloManager.savePlayerData();
+        saveConfig();
     }
 
     public static void registerEvents(Listener... listeners) {
