@@ -1,7 +1,6 @@
 package br.com.pulse.ranked.misc.fourS.match;
 
 import br.com.pulse.ranked.Main;
-import com.kasp.rbw.api.RankedBedwarsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,7 +12,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class MatchStats {
+public class MatchStats implements MatchAPI{
 	
 	private final Main plugin;
 	private File matchsFile;
@@ -105,6 +104,51 @@ public class MatchStats {
 		}
 		
 		return topBedBreaking;
+	}
+
+	public String getMatch(String matchId) {
+		FileConfiguration config = getConfig();
+		reloadConfig();
+		if (config.contains(matchId)) {
+			String map = config.getString(matchId + ".Mapa");
+			String group = config.getString(matchId + ".Modo");
+			String date = config.getString(matchId + ".Data");
+			List<String> team1 = config.getStringList(matchId + ".Time1");
+			List<String> team2 = config.getStringList(matchId + ".Time2");
+			String mvp = config.getString(matchId, ".Mvp");
+			List<String> topKills = config.getStringList(matchId + ".TopKillsFinais");
+			List<String> topBedBreaking = config.getStringList(matchId + ".TopBedBreaking");
+			return (map + group + date + team1 + team2 + mvp + topKills + topBedBreaking);
+		}
+		return matchId;
+	}
+
+	public String getMatchValue(String matchId, String value) {
+		FileConfiguration config = getConfig();
+		reloadConfig();
+		if (config.contains(matchId)) {
+			String map = config.getString(matchId + ".Mapa");
+			String group = config.getString(matchId + ".Modo");
+			String date = config.getString(matchId + ".Data");
+			List<String> team1 = config.getStringList(matchId + ".Time1");
+			List<String> team2 = config.getStringList(matchId + ".Time2");
+			String mvp = config.getString(matchId, ".Mvp");
+			List<String> topKills = config.getStringList(matchId + ".TopKillsFinais");
+			List<String> topBedBreaking = config.getStringList(matchId + ".TopBedBreaking");
+
+            return switch (value) {
+                case "map" -> map;
+                case "group" -> group;
+                case "date" -> date;
+                case "team1" -> team1.toString();
+                case "team2" -> team2.toString();
+                case "mvp" -> mvp;
+                case "topKills" -> topKills.toString();
+                case "topBedBreaking" -> topBedBreaking.toString();
+                default -> matchId;
+            };
+		}
+		return matchId;
 	}
 	
 	public void reloadConfig() {
