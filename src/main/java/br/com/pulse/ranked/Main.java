@@ -39,93 +39,103 @@ import java.util.Arrays;
 
 public class Main extends JavaPlugin {
 
-    public static BedWars bedWars;
-    public static Main plugin;
+    private static BedWars bedWars;
+    private static Main plugin;
     private static EloManager eloManager;
     private static QueueManager queueManager;
     private static MVPManager mvpManager;
     private static MatchStats matchStats;
+    private static VersionSupport nms;
 
-    public static VersionSupport nms;
-    boolean serverSoftwareSupport = true;
-    private static String nmsVersion = Bukkit.getServer().getClass().getName().split("\\.")[3];
-    private static final String minecraftVersion = Bukkit.getServer().getBukkitVersion().split("-")[0];
+    private static final String NMS_VERSION = Bukkit.getServer().getClass().getName().split("\\.")[3];
+    private static final String MINECRAFT_VERSION = Bukkit.getServer().getBukkitVersion().split("-")[0];
 
     @Override
     public void onLoad() {
-        try {
-            Class.forName("org.spigotmc.SpigotConfig");
-        } catch (Exception ignored) {
-            this.getLogger().severe("I can't run on your server software. Please check:");
-            this.getLogger().severe("https://gitlab.com/andrei1058/BedWars1058/wikis/compatibility");
-            serverSoftwareSupport = false;
+        if (!loadServerSupport()) {
+            this.getLogger().severe("Unsupported server software or Minecraft version: " + MINECRAFT_VERSION);
             return;
         }
 
-        switch (minecraftVersion){
-            case "1.20.4":
-                nmsVersion = "v1_20_R3";
-                break;
-            case "1.20.6":
-                nmsVersion = "v1_20_R5";
-                break;
-            default:
-                break;
-        }
-
-        Class supp;
-        try {
-            supp = Class.forName("com.tomkeuper.bedwars.support.version." + nmsVersion + "." + nmsVersion);
-        } catch (ClassNotFoundException e) {
-            serverSoftwareSupport = false;
-            this.getLogger().severe("I can't run on your version: " + minecraftVersion);
-            return;
-        }
-
-        try {
-            //noinspection unchecked
-            nms = (VersionSupport) supp.getConstructor(Class.forName("org.bukkit.plugin.Plugin"), String.class).newInstance(this, nmsVersion);
-        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException |
-                 ClassNotFoundException e) {
-            e.printStackTrace();
-            serverSoftwareSupport = false;
-            this.getLogger().severe("Could not load support for server version: " + minecraftVersion);
-        }
         plugin = this;
     }
 
     @Override
     public void onEnable() {
-        Plugin bedWarsPlugin = Bukkit.getPluginManager().getPlugin("BedWars2023");
+        if (!loadDependencies()) return;
 
-        if (!bedWarsPlugin.isEnabled()) {
-            Bukkit.getPluginManager().disablePlugin(this);
+        initializeManagers();
+        registerCommands();
+        registerListeners();
+        setupPlaceholderAPI();
+        eloManager.savePlayerData();
+
+        scheduleTasks();
+    }
+
+    @Override
+    public void onDisable() {
+        eloManager.savePlayerData();
+        saveConfig();
+    }
+
+    private boolean loadServerSupport() {
+        try {
+            Class.forName("org.spigotmc.SpigotConfig");
+        } catch (Exception e) {
+            this.getLogger().severe("Unsupported server software.");
+            return false;
         }
 
+        try {
+            Class<?> supportClass = Class.forName("com.tomkeuper.bedwars.support.version." + NMS_VERSION + "." + NMS_VERSION);
+            nms = (VersionSupport) supportClass.getConstructor(Plugin.class, String.class).newInstance(this, NMS_VERSION);
+        } catch (Exception e) {
+            this.getLogger().severe("Failed to load server support for version: " + MINECRAFT_VERSION);
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean loadDependencies() {
+        Plugin bedWarsPlugin = Bukkit.getPluginManager().getPlugin("BedWars2023");
+
+        if (bedWarsPlugin == null || !bedWarsPlugin.isEnabled()) {
+            Bukkit.getPluginManager().disablePlugin(this);
+            return false;
+        }
+
+        setupDataFolder(bedWarsPlugin);
+        return true;
+    }
+
+    private void setupDataFolder(Plugin bedWarsPlugin) {
         File dataFolder = new File(bedWarsPlugin.getDataFolder(), "Addons/Ranked");
         if (!dataFolder.exists()) {
             dataFolder.mkdirs();
         }
+
         File playerDataFile = new File(dataFolder, "playersElo.yml");
         if (!playerDataFile.exists()) {
             try {
                 playerDataFile.createNewFile();
             } catch (IOException e) {
-                getLogger().severe("Erro ao criar o arquivo playersElo.yml: " + e.getMessage());
+                getLogger().severe("Error creating playersElo.yml: " + e.getMessage());
             }
         }
         FileConfiguration playerData = YamlConfiguration.loadConfiguration(playerDataFile);
-
         eloManager = new EloManager(playerData);
+    }
+
+    private void initializeManagers() {
         queueManager = new QueueManager(this, eloManager);
         mvpManager = new MVPManager();
         matchStats = new MatchStats(this);
-        MVPManager mvpManager = new MVPManager();
+    }
 
-        registerEvents(new JoinQueueCommand(queueManager, eloManager), new EloListener(eloManager, this, playerData),
-        new AntiLadder(), new ForgeManager(this), new MVPListener(this, mvpManager, eloManager),
-                new TeamManager(), new MatchListener(), new FireballListener(), new ListenersMisc(this));
-
+    private void registerCommands() {
         getCommand("joinqueue").setExecutor(new JoinQueueCommand(queueManager, eloManager));
         getCommand("leavequeue").setExecutor(new LeaveQueueCommand(queueManager));
         getCommand("rank").setExecutor(new RankCommand(eloManager, eloManager.getDisplayPreferences()));
@@ -134,29 +144,35 @@ public class Main extends JavaPlugin {
         getCommand("partida").setExecutor(new MatchCommand(this));
         getCommand("rankdisplay").setExecutor(new RankDisplayCommand(eloManager));
         getCommand("tournament").setExecutor(new DiamondCommand());
-
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            Bukkit.getScheduler().runTaskLater(this, () ->
-                    getLogger().info("Hook to PlaceholderAPI support!"), 20L);
-            new Placeholder(this, eloManager, eloManager.getDisplayPreferences()).register();
-        }
-
-        eloManager.savePlayerData();
-
-        Bukkit.getScheduler().runTaskLater(this, () -> {
-            getLogger().info("");
-            getLogger().info("PulseRanked enabled");
-            getLogger().info("Hook to BedWars2023 support");
-            getLogger().info("Hook to Placeholder support");
-            getLogger().info("");
-        }, 60L);
-
     }
 
-    @Override
-    public void onDisable() {
-        eloManager.savePlayerData();
-        saveConfig();
+    private void registerListeners() {
+        registerEvents(
+                new JoinQueueCommand(queueManager, eloManager),
+                new EloListener(eloManager, this, eloManager.getPlayerData()),
+                new AntiLadder(),
+                new ForgeManager(this),
+                new MVPListener(this, mvpManager, eloManager),
+                new TeamManager(),
+                new MatchListener(),
+                new FireballListener(),
+                new ListenersMisc(this)
+        );
+    }
+
+    private void setupPlaceholderAPI() {
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            Bukkit.getScheduler().runTaskLater(this, () ->
+                    getLogger().info("Hooked to PlaceholderAPI support!"), 20L);
+            new Placeholder(this, eloManager, eloManager.getDisplayPreferences()).register();
+        }
+    }
+
+    private void scheduleTasks() {
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            getLogger().info("PulseRanked enabled");
+            getLogger().info("Hooked to BedWars2023 and PlaceholderAPI");
+        }, 60L);
     }
 
     public static void registerEvents(Listener... listeners) {
@@ -167,12 +183,8 @@ public class Main extends JavaPlugin {
         return bedWars;
     }
 
-    public static Main getInstance(){
+    public static Main getInstance() {
         return plugin;
-    }
-
-    public static void debug(String msg){
-        plugin.getLogger().info("[DEBUG] - " + msg);
     }
 
     public static EloAPI getEloAPI() {
@@ -189,5 +201,9 @@ public class Main extends JavaPlugin {
 
     public static MatchAPI getMatchAPI() {
         return matchStats;
+    }
+
+    public static void debug(String msg) {
+        plugin.getLogger().info("[DEBUG] - " + msg);
     }
 }
