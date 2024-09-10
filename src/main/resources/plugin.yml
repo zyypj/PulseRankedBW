@@ -1,7 +1,7 @@
 name: PulseRankedBW
 version: '${project.version}'
 main: br.com.pulse.ranked.Main
-depend: [PRanked4sBOT, LeafPlugins, LeafPunish, BedWars2023, PlaceholderAPI]
+depend: [LeafPlugins, LeafPunish, BedWars2023, PlaceholderAPI, RankedBedwars]
 commands:
   joinqueue:
     description: Entrar em uma fila

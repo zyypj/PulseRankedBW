@@ -8,13 +8,16 @@ import br.com.pulse.ranked.misc.RankCommand;
 import br.com.pulse.ranked.misc.RankDisplayCommand;
 import br.com.pulse.ranked.misc.fourS.ForgeManager;
 import br.com.pulse.ranked.misc.fourS.TeamManager;
+import br.com.pulse.ranked.misc.fourS.match.MatchAPI;
 import br.com.pulse.ranked.misc.fourS.match.MatchCommand;
 import br.com.pulse.ranked.misc.fourS.match.MatchListener;
+import br.com.pulse.ranked.misc.fourS.match.MatchStats;
 import br.com.pulse.ranked.misc.listeners.AntiLadder;
 import br.com.pulse.ranked.misc.listeners.FireballListener;
 import br.com.pulse.ranked.misc.mvp.MVPCommand;
 import br.com.pulse.ranked.misc.mvp.MVPListener;
 import br.com.pulse.ranked.misc.mvp.MVPManager;
+import br.com.pulse.ranked.misc.mvp.MVPManagerAPI;
 import br.com.pulse.ranked.misc.tournament.DiamondCommand;
 import br.com.pulse.ranked.queue.JoinQueueCommand;
 import br.com.pulse.ranked.queue.LeaveQueueCommand;
@@ -40,6 +43,8 @@ public class Main extends JavaPlugin {
     public static Main plugin;
     private static EloManager eloManager;
     private static QueueManager queueManager;
+    private static MVPManager mvpManager;
+    private static MatchStats matchStats;
 
     public static VersionSupport nms;
     boolean serverSoftwareSupport = true;
@@ -113,6 +118,8 @@ public class Main extends JavaPlugin {
 
         eloManager = new EloManager(playerData);
         queueManager = new QueueManager(this, eloManager);
+        mvpManager = new MVPManager();
+        matchStats = new MatchStats(this);
         MVPManager mvpManager = new MVPManager();
 
         registerEvents(new JoinQueueCommand(queueManager, eloManager), new EloListener(eloManager, this, playerData),
@@ -176,4 +183,11 @@ public class Main extends JavaPlugin {
         return queueManager;
     }
 
+    public static MVPManagerAPI getMVPManagerAPI() {
+        return mvpManager;
+    }
+
+    public static MatchAPI getMatchAPI() {
+        return matchStats;
+    }
 }
