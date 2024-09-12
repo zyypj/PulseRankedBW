@@ -1,6 +1,5 @@
 package br.com.pulse.ranked.elo;
 
-import br.com.pulse.ranked.EloAPI;
 import com.kasp.rbw.api.RankedBedwarsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,11 +14,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class EloManager implements EloAPI {
+public class EloManager{
 
 	private final FileConfiguration playerData;
 	private final ConcurrentHashMap<UUID, Boolean> displayPreferences;
 	private final ConcurrentHashMap<UUID, Integer> eloCache;
+	private static EloManager eloManager;
 
 	RankedBedwarsAPI api = Bukkit.getServicesManager().getRegistration(RankedBedwarsAPI.class).getProvider();
 
@@ -27,6 +27,7 @@ public class EloManager implements EloAPI {
 		this.playerData = playerData;
 		this.displayPreferences = new ConcurrentHashMap<>();
 		this.eloCache = new ConcurrentHashMap<>();
+		eloManager = this;
 		loadDisplayPreferences();
 	}
 
@@ -212,5 +213,9 @@ public class EloManager implements EloAPI {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static EloManager getEloManager() {
+		return eloManager;
 	}
 }

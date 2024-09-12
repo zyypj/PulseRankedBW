@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class MVPManager implements MVPManagerAPI{
+public class MVPManager {
     private final Map<IArena, Map<UUID, Integer>> arenaMvpPoints;
     public static MVPManager mvpManager;
 

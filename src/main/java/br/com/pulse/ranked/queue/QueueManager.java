@@ -1,7 +1,6 @@
 package br.com.pulse.ranked.queue;
 
 import br.com.pulse.ranked.Main;
-import br.com.pulse.ranked.QueueAPI;
 import br.com.pulse.ranked.elo.EloManager;
 import com.tomkeuper.bedwars.api.BedWars;
 import org.bukkit.Bukkit;
@@ -11,7 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-public class QueueManager implements QueueAPI {
+public class QueueManager {
 
     private static final int TICKS_PER_SECOND = 20;
     private static final int QUEUE_CHECK_INTERVAL = 5; // segundos
@@ -22,6 +21,7 @@ public class QueueManager implements QueueAPI {
     private final Map<String, List<PlayerQueue>> game1v1Queue;
     private final Map<String, List<Player>> gameQueue;
     private final BedWars bedwarsAPI;
+    private static QueueManager queueManager;
 
     public QueueManager(Main plugin, EloManager eloManager) {
         this.plugin = plugin;
@@ -29,6 +29,7 @@ public class QueueManager implements QueueAPI {
         this.gameQueue = new HashMap<>();
         this.game1v1Queue = new HashMap<>();
         this.bedwarsAPI = Bukkit.getServicesManager().getRegistration(BedWars.class).getProvider();
+        queueManager = this;
         startQueueTask();
     }
 
@@ -233,6 +234,10 @@ public class QueueManager implements QueueAPI {
                 }
             }, 40L);
         }
+    }
+
+    public static QueueManager getQueueManager() {
+        return queueManager;
     }
 }
 

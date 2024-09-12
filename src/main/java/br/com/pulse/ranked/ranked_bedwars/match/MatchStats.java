@@ -12,14 +12,16 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class MatchStats implements MatchAPI{
-	
+public class MatchStats {
+
 	private final Main plugin;
 	private File matchsFile;
 	private FileConfiguration matchsConfig;
+	private static MatchStats matchStats;
 	
 	public MatchStats(Main plugin) {
 		this.plugin = plugin;
+		matchStats = this;
 		createMatchsFile();
 	}
 	
@@ -155,5 +157,9 @@ public class MatchStats implements MatchAPI{
 		if (matchsFile != null) {
 			matchsConfig = YamlConfiguration.loadConfiguration(matchsFile);
 		}
+	}
+
+	public static MatchStats getMatchStats() {
+		return matchStats;
 	}
 }

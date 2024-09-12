@@ -1,5 +1,6 @@
 package br.com.pulse.ranked;
 
+import br.com.pulse.ranked.api.impl.PulseRankedAPIImpl;
 import br.com.pulse.ranked.elo.EloListener;
 import br.com.pulse.ranked.elo.EloManager;
 import br.com.pulse.ranked.elo.commands.EloCommand;
@@ -8,16 +9,13 @@ import br.com.pulse.ranked.rank.RankCommand;
 import br.com.pulse.ranked.rank.RankDisplayCommand;
 import br.com.pulse.ranked.ranked_bedwars.ForgeManager;
 import br.com.pulse.ranked.ranked_bedwars.TeamManager;
-import br.com.pulse.ranked.ranked_bedwars.match.MatchAPI;
 import br.com.pulse.ranked.ranked_bedwars.match.MatchCommand;
 import br.com.pulse.ranked.ranked_bedwars.match.MatchListener;
-import br.com.pulse.ranked.ranked_bedwars.match.MatchStats;
 import br.com.pulse.ranked.misc.listeners.AntiLadder;
 import br.com.pulse.ranked.misc.listeners.FireballListener;
 import br.com.pulse.ranked.mvp.MVPCommand;
 import br.com.pulse.ranked.mvp.MVPListener;
 import br.com.pulse.ranked.mvp.MVPManager;
-import br.com.pulse.ranked.mvp.MVPManagerAPI;
 import br.com.pulse.ranked.tournament.DiamondCommand;
 import br.com.pulse.ranked.queue.JoinQueueCommand;
 import br.com.pulse.ranked.queue.LeaveQueueCommand;
@@ -38,13 +36,13 @@ import java.util.Arrays;
 
 public class Main extends JavaPlugin {
 
+    public static VersionSupport nms;
+    public static Main plugin;
     private static BedWars bedWars;
-    private static Main plugin;
     private static EloManager eloManager;
     private static QueueManager queueManager;
     private static MVPManager mvpManager;
-    private static MatchStats matchStats;
-    private static VersionSupport nms;
+    private static PulseRankedAPIImpl pulseRankedAPIImpl;
 
     private static final String NMS_VERSION = Bukkit.getServer().getClass().getName().split("\\.")[3];
     private static final String MINECRAFT_VERSION = Bukkit.getServer().getBukkitVersion().split("-")[0];
@@ -131,7 +129,7 @@ public class Main extends JavaPlugin {
     private void initializeManagers() {
         queueManager = new QueueManager(this, eloManager);
         mvpManager = new MVPManager();
-        matchStats = new MatchStats(this);
+        pulseRankedAPIImpl = new PulseRankedAPIImpl();
     }
 
     private void registerCommands() {
@@ -186,20 +184,8 @@ public class Main extends JavaPlugin {
         return plugin;
     }
 
-    public static EloAPI getEloAPI() {
-        return eloManager;
-    }
-
-    public static QueueAPI getQueueAPI() {
-        return queueManager;
-    }
-
-    public static MVPManagerAPI getMVPManagerAPI() {
-        return mvpManager;
-    }
-
-    public static MatchAPI getMatchAPI() {
-        return matchStats;
+    public static PulseRankedAPIImpl getAPI() {
+        return pulseRankedAPIImpl;
     }
 
     public static void debug(String msg) {
