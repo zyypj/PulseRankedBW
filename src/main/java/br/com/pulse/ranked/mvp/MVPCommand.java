@@ -1,4 +1,4 @@
-package br.com.pulse.ranked.misc.mvp;
+package br.com.pulse.ranked.mvp;
 
 import br.com.pulse.ranked.elo.EloManager;
 import org.bukkit.Bukkit;

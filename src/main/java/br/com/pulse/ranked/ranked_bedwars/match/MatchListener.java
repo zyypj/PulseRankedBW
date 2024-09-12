@@ -1,7 +1,7 @@
-package br.com.pulse.ranked.misc.fourS.match;
+package br.com.pulse.ranked.ranked_bedwars.match;
 
 import br.com.pulse.ranked.Main;
-import br.com.pulse.ranked.misc.mvp.MVPManager;
+import br.com.pulse.ranked.mvp.MVPManager;
 import com.tomkeuper.bedwars.api.arena.GameState;
 import com.tomkeuper.bedwars.api.arena.IArena;
 import com.tomkeuper.bedwars.api.arena.team.ITeam;

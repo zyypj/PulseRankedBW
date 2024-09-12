@@ -1,4 +1,4 @@
-package br.com.pulse.ranked.misc.tournament;
+package br.com.pulse.ranked.tournament;
 
 import com.tomkeuper.bedwars.api.BedWars;
 import com.tomkeuper.bedwars.api.arena.IArena;

@@ -1,4 +1,4 @@
-package br.com.pulse.ranked.misc.fourS.match;
+package br.com.pulse.ranked.ranked_bedwars.match;
 
 import br.com.pulse.ranked.Main;
 import org.bukkit.Bukkit;

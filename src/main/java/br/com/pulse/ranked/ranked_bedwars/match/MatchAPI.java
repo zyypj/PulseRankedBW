@@ -1,4 +1,4 @@
-package br.com.pulse.ranked.misc.fourS.match;
+package br.com.pulse.ranked.ranked_bedwars.match;
 
 public interface MatchAPI {
 

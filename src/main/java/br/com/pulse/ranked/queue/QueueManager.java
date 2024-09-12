@@ -13,17 +13,22 @@ import java.util.*;
 
 public class QueueManager implements QueueAPI {
 
+    private static final int TICKS_PER_SECOND = 20;
+    private static final int QUEUE_CHECK_INTERVAL = 5; // segundos
+    private static final int MAX_QUEUE_TIME = 300; // segundos
+
     private final Main plugin;
     private final EloManager eloManager;
     private final Map<String, List<PlayerQueue>> game1v1Queue;
     private final Map<String, List<Player>> gameQueue;
-    BedWars bedwarsAPI = Bukkit.getServicesManager().getRegistration(BedWars.class).getProvider();
+    private final BedWars bedwarsAPI;
 
     public QueueManager(Main plugin, EloManager eloManager) {
         this.plugin = plugin;
         this.eloManager = eloManager;
         this.gameQueue = new HashMap<>();
         this.game1v1Queue = new HashMap<>();
+        this.bedwarsAPI = Bukkit.getServicesManager().getRegistration(BedWars.class).getProvider();
         startQueueTask();
     }
 
@@ -37,14 +42,15 @@ public class QueueManager implements QueueAPI {
         if (gameType.equalsIgnoreCase("Ranked1v1")) {
             int playerElo = eloManager.getElo(player.getUniqueId(), gameType.toLowerCase());
             List<PlayerQueue> queue = game1v1Queue.computeIfAbsent(gameType, k -> new ArrayList<>());
-            queue.add(new PlayerQueue(player, playerElo));
+            PlayerQueue playerQueue = new PlayerQueue(player, playerElo);
+            queue.add(playerQueue);
             player.sendMessage("");
             player.sendMessage("§7Você entrou na fila do modo: §5" + gameType);
             player.sendMessage("§7Digite §5/leavequeue §7para sair da fila.");
             player.sendMessage("");
             player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
 
-            handleRanked1v1Queue(player);
+            handleRanked1v1Queue(playerQueue);
 
             return;
         }
@@ -59,20 +65,13 @@ public class QueueManager implements QueueAPI {
         checkQueue(gameType);
     }
 
-    private void handleRanked1v1Queue(Player player) {
+    private void handleRanked1v1Queue(PlayerQueue playerQueue) {
         new BukkitRunnable() {
             @Override
             public void run() {
-                List<PlayerQueue> queue = game1v1Queue.get("Ranked1v1");
-                if (queue == null) return;
-                for (PlayerQueue playerQueue : queue) {
-                    if (playerQueue.getPlayer().equals(player)) {
-                        searchForBalancedMatch(playerQueue);
-                        return;
-                    }
-                }
+                searchForBalancedMatch(playerQueue);
             }
-        }.runTaskTimer(plugin, 0, 100); // Executa a cada 5 segundos (100 ticks)
+        }.runTaskTimer(plugin, 0, QUEUE_CHECK_INTERVAL * TICKS_PER_SECOND);
     }
 
     private void startQueueTask() {
@@ -81,12 +80,10 @@ public class QueueManager implements QueueAPI {
             public void run() {
                 for (String gameType : gameQueue.keySet()) {
                     List<PlayerQueue> queue = game1v1Queue.get(gameType);
-                    if (queue == null) {
-                        continue; // Pule para o próximo gameType se a fila for nula
-                    }
+                    if (queue == null) continue;
                     List<PlayerQueue> queueCopy = new ArrayList<>(queue);
                     for (PlayerQueue playerQueue : queueCopy) {
-                        if ((System.currentTimeMillis() - playerQueue.getJoinTime()) >= 300000) { // 5 minutos
+                        if ((System.currentTimeMillis() - playerQueue.getJoinTime()) >= MAX_QUEUE_TIME * 1000) {
                             leaveQueue(playerQueue.getPlayer());
                             continue;
                         }
@@ -94,31 +91,28 @@ public class QueueManager implements QueueAPI {
                     }
                 }
             }
-        }.runTaskTimer(plugin, 0, 100); // Executa a cada 5 segundos (100 ticks)
+        }.runTaskTimer(plugin, 0, QUEUE_CHECK_INTERVAL * TICKS_PER_SECOND);
     }
 
     private void searchForBalancedMatch(PlayerQueue playerQueue) {
         int baseElo = playerQueue.getElo();
         int timeInQueue = (int) ((System.currentTimeMillis() - playerQueue.getJoinTime()) / 1000);
-        int range = (timeInQueue / 5) * 50; // Aumenta a cada 5 segundos
-
-        int minElo = Math.max(baseElo - range, 0);
-        int maxElo = baseElo + range;
+        int range = (timeInQueue / QUEUE_CHECK_INTERVAL) * 50;
 
         List<PlayerQueue> queue = game1v1Queue.get("Ranked1v1");
-        for (PlayerQueue otherPlayer : queue) {
-            if (otherPlayer == playerQueue) continue;
-            if (Math.abs(otherPlayer.getElo() - baseElo) <= range) {
-                startGame1v1(Arrays.asList(playerQueue, otherPlayer), "Ranked1v1");
-                return;
-            }
-        }
-
-        if (timeInQueue % 5 == 0) { // Enviar mensagem a cada 5 segundos
+        Optional<PlayerQueue> match = queue.stream()
+                .filter(other -> other != playerQueue && Math.abs(other.getElo() - baseElo) <= range)
+                .findFirst();
+        if (match.isPresent()) {
+            startGame1v1(Arrays.asList(playerQueue, match.get()), "Ranked1v1");
+        } else {
+            // Enviar mensagem a cada 5 segundos
             playerQueue.getPlayer().sendMessage("");
             playerQueue.getPlayer().sendMessage("§c§lPulse Ranked");
             playerQueue.getPlayer().sendMessage("§fProcurando partida...");
             playerQueue.getPlayer().sendMessage("§fModo: §5Ranked 1v1");
+            int minElo = baseElo - range;
+            int maxElo = baseElo + range;
             playerQueue.getPlayer().sendMessage("§fElo: §5[§7" + minElo + "§f-§7" + maxElo + "§5]");
             playerQueue.getPlayer().sendMessage("");
         }
@@ -127,25 +121,23 @@ public class QueueManager implements QueueAPI {
     private void searchForMatch(PlayerQueue playerQueue, String gameType) {
         int baseElo = playerQueue.getElo();
         int timeInQueue = (int) ((System.currentTimeMillis() - playerQueue.getJoinTime()) / 1000);
-        int range = (timeInQueue / 5) * 50; // Aumenta a cada 5 segundos
-
-        int minElo = Math.max(baseElo - range, 0);
-        int maxElo = baseElo + range;
+        int range = (timeInQueue / QUEUE_CHECK_INTERVAL) * 50;
 
         List<PlayerQueue> queue = game1v1Queue.get(gameType);
-        for (PlayerQueue otherPlayer : queue) {
-            if (otherPlayer == playerQueue) continue;
-            if (Math.abs(otherPlayer.getElo() - baseElo) <= range) {
-                startGame1v1(Arrays.asList(playerQueue, otherPlayer), gameType);
-                return;
-            }
-        }
-
-        if (timeInQueue % 5 == 0) { // Enviar mensagem a cada 5 segundos
-            playerQueue.getPlayer().sendMessage("§c§lPulse Ranked");
+        Optional<PlayerQueue> match = queue.stream()
+                .filter(other -> other != playerQueue && Math.abs(other.getElo() - baseElo) <= range)
+                .findFirst();
+        if (match.isPresent()) {
+            startGame1v1(Arrays.asList(playerQueue, match.get()), gameType);
+        } else {
+            // Enviar mensagem a cada 5 segundos
             playerQueue.getPlayer().sendMessage("");
+            playerQueue.getPlayer().sendMessage("§c§lPulse Ranked");
             playerQueue.getPlayer().sendMessage("§fProcurando partida...");
-            playerQueue.getPlayer().sendMessage("§fElo: §5[" + minElo + "§f~§5" + maxElo + "]");
+            playerQueue.getPlayer().sendMessage("§fModo: §5" + gameType);
+            int minElo = baseElo - range;
+            int maxElo = baseElo + range;
+            playerQueue.getPlayer().sendMessage("§fElo: §5[§7" + minElo + "§f-§7" + maxElo + "§5]");
             playerQueue.getPlayer().sendMessage("");
         }
     }

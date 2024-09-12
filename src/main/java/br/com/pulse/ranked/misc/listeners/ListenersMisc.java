@@ -1,4 +1,4 @@
-package br.com.pulse.ranked.misc;
+package br.com.pulse.ranked.misc.listeners;
 
 import br.com.pulse.ranked.Main;
 import com.google.gson.Gson;

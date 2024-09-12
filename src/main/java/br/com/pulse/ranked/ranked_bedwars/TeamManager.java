@@ -1,4 +1,4 @@
-package br.com.pulse.ranked.misc.fourS;
+package br.com.pulse.ranked.ranked_bedwars;
 
 import br.com.pulse.ranked.Main;
 import com.tomkeuper.bedwars.api.BedWars;
