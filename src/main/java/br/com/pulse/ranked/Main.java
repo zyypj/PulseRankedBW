@@ -21,7 +21,6 @@ import br.com.pulse.ranked.queue.JoinQueueCommand;
 import br.com.pulse.ranked.queue.LeaveQueueCommand;
 import br.com.pulse.ranked.queue.QueueManager;
 import br.com.pulse.ranked.support.Placeholder;
-import com.tomkeuper.bedwars.api.BedWars;
 import com.tomkeuper.bedwars.api.server.VersionSupport;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -37,15 +36,14 @@ import java.util.Arrays;
 public class Main extends JavaPlugin {
 
     public static VersionSupport nms;
-    public static Main plugin;
-    private static BedWars bedWars;
-    private static EloManager eloManager;
-    private static QueueManager queueManager;
-    private static MVPManager mvpManager;
     private static PulseRankedAPIImpl pulseRankedAPIImpl;
+    public static Main plugin;
+    private EloManager eloManager;
+    private QueueManager queueManager;
+    private MVPManager mvpManager;
 
-    private static final String NMS_VERSION = Bukkit.getServer().getClass().getName().split("\\.")[3];
-    private static final String MINECRAFT_VERSION = Bukkit.getServer().getBukkitVersion().split("-")[0];
+    private final String NMS_VERSION = Bukkit.getServer().getClass().getName().split("\\.")[3];
+    private final String MINECRAFT_VERSION = Bukkit.getServer().getBukkitVersion().split("-")[0];
 
     @Override
     public void onLoad() {
@@ -174,10 +172,6 @@ public class Main extends JavaPlugin {
 
     public static void registerEvents(Listener... listeners) {
         Arrays.stream(listeners).forEach(l -> plugin.getServer().getPluginManager().registerEvents(l, plugin));
-    }
-
-    public static BedWars getBedWars() {
-        return bedWars;
     }
 
     public static Main getInstance() {
