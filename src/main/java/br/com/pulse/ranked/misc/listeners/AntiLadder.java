@@ -25,9 +25,7 @@ public class AntiLadder implements Listener {
             Location blockLocation = event.getBlock().getLocation();
             IArena arena = bedwarsAPI.getArenaUtil().getArenaByPlayer(player);
             String group = arena.getGroup();
-            if (group.equalsIgnoreCase("RankedSolo") || group.equalsIgnoreCase("RankedDuplas") ||
-                    group.equalsIgnoreCase("Ranked1v1") || group.equalsIgnoreCase("Ranked4s")
-                    || group.equalsIgnoreCase("Ranked2v2CM")) {
+            if (group.startsWith("Ranked")) {
                 for (ITeam team : arena.getTeams()) {
                     Location bedLocation = team.getBed();
                     if (bedLocation != null && isNearBed(blockLocation, bedLocation, 8)) {

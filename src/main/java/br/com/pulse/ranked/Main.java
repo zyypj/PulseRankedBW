@@ -16,7 +16,7 @@ import br.com.pulse.ranked.misc.listeners.FireballListener;
 import br.com.pulse.ranked.mvp.MVPCommand;
 import br.com.pulse.ranked.mvp.MVPListener;
 import br.com.pulse.ranked.mvp.MVPManager;
-import br.com.pulse.ranked.tournament.DiamondCommand;
+import br.com.pulse.ranked.tournament.TournamentCommand;
 import br.com.pulse.ranked.queue.JoinQueueCommand;
 import br.com.pulse.ranked.queue.LeaveQueueCommand;
 import br.com.pulse.ranked.queue.QueueManager;
@@ -138,7 +138,7 @@ public class Main extends JavaPlugin {
         getCommand("mvp").setExecutor(new MVPCommand(eloManager));
         getCommand("partida").setExecutor(new MatchCommand(this));
         getCommand("rankdisplay").setExecutor(new RankDisplayCommand(eloManager));
-        getCommand("tournament").setExecutor(new DiamondCommand());
+        getCommand("tournament").setExecutor(new TournamentCommand());
     }
 
     private void registerListeners() {

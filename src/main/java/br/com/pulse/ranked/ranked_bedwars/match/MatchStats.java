@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,16 +19,17 @@ public class MatchStats {
 	private File matchsFile;
 	private FileConfiguration matchsConfig;
 	private static MatchStats matchStats;
-	
+
+	// Constructor now doesn't use static
 	public MatchStats(Main plugin) {
 		this.plugin = plugin;
 		matchStats = this;
 		createMatchsFile();
 	}
-	
+
 	private void createMatchsFile() {
 		Plugin bedWarsPlugin = Bukkit.getPluginManager().getPlugin("BedWars2023");
-		
+
 		if (bedWarsPlugin != null) {
 			matchsFile = new File(bedWarsPlugin.getDataFolder(), "Addons/Ranked/Matchs.yml");
 			if (!matchsFile.exists()) {
@@ -38,44 +40,49 @@ public class MatchStats {
 					e.printStackTrace();
 				}
 			}
-			
 			matchsConfig = YamlConfiguration.loadConfiguration(matchsFile);
 		} else {
 			plugin.getLogger().severe("BedWars2023 plugin not found!");
 		}
 	}
-	
+
 	public FileConfiguration getConfig() {
 		return matchsConfig;
 	}
-	
+
+	// Save match asynchronously to avoid blocking the main thread
 	public void saveMatch(String id, String map, String group, List<String> team1, List<String> team2, Player mvp, List<String> topKills, List<String> topBedBreaking) {
-		
 		matchsConfig.set(id + ".Mapa", map);
 		matchsConfig.set(id + ".Modo", group);
 		matchsConfig.set(id + ".Data", new SimpleDateFormat("dd/MM/yy").format(new Date()));
 		matchsConfig.set(id + ".Time1", team1);
 		matchsConfig.set(id + ".Time2", team2);
-		matchsConfig.set(id + ".Mvp", mvp);
+		matchsConfig.set(id + ".Mvp", mvp.getName());
 		matchsConfig.set(id + ".TopKillsFinais", topKills);
 		matchsConfig.set(id + ".TopBedBreaking", topBedBreaking);
-		
-		try {
-			matchsConfig.save(matchsFile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
+		// Asynchronous task to save the file
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				try {
+					matchsConfig.save(matchsFile);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}.runTaskAsynchronously(plugin); // Running asynchronously
 	}
-	
+
 	public List<String> getTopKills(Map<String, Integer> playerKills) {
 		List<String> topKills = new ArrayList<>();
-		
 		LinkedHashMap<String, Integer> sortedKills = new LinkedHashMap<>();
+
 		playerKills.entrySet()
-		  .stream()
-		  .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-		  .forEachOrdered(x -> sortedKills.put(x.getKey(), x.getValue()));
-		
+				.stream()
+				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+				.forEachOrdered(x -> sortedKills.put(x.getKey(), x.getValue()));
+
 		int entryIndex = 0;
 		for (Map.Entry<String, Integer> sortedEntry : sortedKills.entrySet()) {
 			if (entryIndex == 0) {
@@ -88,23 +95,23 @@ public class MatchStats {
 			}
 			entryIndex++;
 		}
-		
+
 		return topKills;
 	}
-	
+
 	public List<String> getTopBedBreaking(Map<String, Integer> playerBedsDestroyed) {
 		List<String> topBedBreaking = new ArrayList<>();
-		
 		LinkedHashMap<String, Integer> sortedBeds = new LinkedHashMap<>();
+
 		playerBedsDestroyed.entrySet()
-		  .stream()
-		  .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-		  .forEachOrdered(x -> sortedBeds.put(x.getKey(), x.getValue()));
-		
+				.stream()
+				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+				.forEachOrdered(x -> sortedBeds.put(x.getKey(), x.getValue()));
+
 		for (Map.Entry<String, Integer> entry : sortedBeds.entrySet()) {
 			topBedBreaking.add(entry.getKey() + " §7- §5" + entry.getValue());
 		}
-		
+
 		return topBedBreaking;
 	}
 
@@ -117,7 +124,7 @@ public class MatchStats {
 			String date = config.getString(matchId + ".Data");
 			List<String> team1 = config.getStringList(matchId + ".Time1");
 			List<String> team2 = config.getStringList(matchId + ".Time2");
-			String mvp = config.getString(matchId, ".Mvp");
+			String mvp = config.getString(matchId + ".Mvp");
 			List<String> topKills = config.getStringList(matchId + ".TopKillsFinais");
 			List<String> topBedBreaking = config.getStringList(matchId + ".TopBedBreaking");
 			return (map + group + date + team1 + team2 + mvp + topKills + topBedBreaking);
@@ -134,25 +141,25 @@ public class MatchStats {
 			String date = config.getString(matchId + ".Data");
 			List<String> team1 = config.getStringList(matchId + ".Time1");
 			List<String> team2 = config.getStringList(matchId + ".Time2");
-			String mvp = config.getString(matchId, ".Mvp");
+			String mvp = config.getString(matchId + ".Mvp");
 			List<String> topKills = config.getStringList(matchId + ".TopKillsFinais");
 			List<String> topBedBreaking = config.getStringList(matchId + ".TopBedBreaking");
 
-            return switch (value) {
-                case "map" -> map;
-                case "group" -> group;
-                case "date" -> date;
-                case "team1" -> team1.toString();
-                case "team2" -> team2.toString();
-                case "mvp" -> mvp;
-                case "topKills" -> topKills.toString();
-                case "topBedBreaking" -> topBedBreaking.toString();
-                default -> matchId;
-            };
+			return switch (value) {
+				case "map" -> map;
+				case "group" -> group;
+				case "date" -> date;
+				case "team1" -> team1.toString();
+				case "team2" -> team2.toString();
+				case "mvp" -> mvp;
+				case "topKills" -> topKills.toString();
+				case "topBedBreaking" -> topBedBreaking.toString();
+				default -> matchId;
+			};
 		}
 		return matchId;
 	}
-	
+
 	public void reloadConfig() {
 		if (matchsFile != null) {
 			matchsConfig = YamlConfiguration.loadConfiguration(matchsFile);

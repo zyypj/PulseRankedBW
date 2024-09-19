@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.List;
 
-public class DiamondCommand implements CommandExecutor {
+public class TournamentCommand implements CommandExecutor {
 
     BedWars bAPI = Bukkit.getServicesManager().getRegistration(BedWars.class).getProvider();
 

@@ -6,7 +6,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,42 +13,51 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class EloManager{
+public class EloManager {
 
 	private final FileConfiguration playerData;
 	private final ConcurrentHashMap<UUID, Boolean> displayPreferences;
 	private final ConcurrentHashMap<UUID, Integer> eloCache;
 	private static EloManager eloManager;
 
-	RankedBedwarsAPI api = Bukkit.getServicesManager().getRegistration(RankedBedwarsAPI.class).getProvider();
+	private final RankedBedwarsAPI api;
 
 	public EloManager(FileConfiguration playerData) {
 		this.playerData = playerData;
 		this.displayPreferences = new ConcurrentHashMap<>();
 		this.eloCache = new ConcurrentHashMap<>();
+		this.api = Bukkit.getServicesManager().getRegistration(RankedBedwarsAPI.class).getProvider();
 		eloManager = this;
 		loadDisplayPreferences();
 	}
 
 	public int getElo(UUID playerUUID, String type) {
+		// Verifica o cache primeiro
 		if (eloCache.containsKey(playerUUID)) {
 			return eloCache.get(playerUUID);
 		}
 
+		// Cálculo de elo geral
 		if (type.equalsIgnoreCase("geral")) {
 			Player player = Bukkit.getPlayer(playerUUID);
+			if (player == null) return 0;
+
 			int elo1v1 = getElo(playerUUID, "ranked1v1");
 			int elo4v4 = api.getElo(player);
 			int elo2v2cm = getElo(playerUUID, "ranked2v2cm");
 			int elo = (elo1v1 + elo4v4 + elo2v2cm) / 3;
-			eloCache.put(playerUUID, elo);
+
+			eloCache.put(playerUUID, elo);  // Atualiza o cache
 			return elo;
 		}
-		return playerData.getInt(playerUUID + "." + type, 0);
+
+		// Retorna o elo específico
+		return playerData.getInt(playerUUID.toString() + "." + type, 0);
 	}
 
 	public void setElo(UUID playerUUID, String type, int elo) {
 		playerData.set(playerUUID.toString() + "." + type, elo);
+		eloCache.put(playerUUID, elo);  // Atualiza o cache imediatamente
 		savePlayerData();
 	}
 
@@ -67,107 +75,62 @@ public class EloManager{
 		setElo(playerUUID, type, newElo);
 
 		// Verifica se o rank mudou e envia uma mensagem ao jogador
-		if (!currentRank.equals(newRank)) {
-			Player player = Bukkit.getPlayer(playerUUID);
-			if (player != null && player.isOnline()) {
-				player.sendMessage("§aParabéns! Você subiu para " + newRank + "!");
-			}
+		Player player = Bukkit.getPlayer(playerUUID);
+		if (player != null && player.isOnline() && !currentRank.equals(newRank)) {
+			player.sendMessage("§aParabéns! Você subiu para " + newRank + "!");
 		}
-
-		savePlayerData();
 	}
 
 	public int getMvp(Player player) {
-		return getPlayerData().getInt(player.getUniqueId() + ".mvp", 0);
+		return playerData.getInt(player.getUniqueId().toString() + ".mvp", 0);
 	}
 
 	public String getRank(int elo) {
-		if (elo <= 50) {
-			return "§4[Bronze III]";
-		} else if (elo < 100) {
-			return "§4[Bronze II]";
-		} else if (elo < 150) {
-			return "§4[Bronze I]";
-		} else if (elo < 250) {
-			return "§8[Prata III]";
-		} else if (elo < 350) {
-			return "§8[Prata II]";
-		} else if (elo < 450) {
-			return "§8[Prata I]";
-		} else if (elo < 600) {
-			return "§6[Ouro III]";
-		} else if (elo < 700) {
-			return "§6[Ouro II]";
-		} else if (elo < 800) {
-			return "§6[Ouro I]";
-		} else if (elo < 900) {
-			return "§b[Diamante III]";
-		} else if (elo < 1100) {
-			return "§b[Diamante II]";
-		} else {
-			return "§b[Diamante I]";
-		}
+		if (elo <= 50) return "§4[Bronze III]";
+		if (elo < 100) return "§4[Bronze II]";
+		if (elo < 150) return "§4[Bronze I]";
+		if (elo < 250) return "§8[Prata III]";
+		if (elo < 350) return "§8[Prata II]";
+		if (elo < 450) return "§8[Prata I]";
+		if (elo < 600) return "§6[Ouro III]";
+		if (elo < 700) return "§6[Ouro II]";
+		if (elo < 800) return "§6[Ouro I]";
+		if (elo < 900) return "§b[Diamante III]";
+		if (elo < 1100) return "§b[Diamante II]";
+		return "§b[Diamante I]";
 	}
 
 	public void savePlayerData() {
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				File dataFolder = new File(Bukkit.getPluginManager().getPlugin("BedWars2023").getDataFolder(), "Addons/Ranked");
-				if (!dataFolder.exists()) {
-					dataFolder.mkdirs();
-				}
-				File playerDataFile = new File(dataFolder, "playersElo.yml");
-				try {
-					YamlConfiguration config = new YamlConfiguration();
-					for (String uuidString : playerData.getKeys(false)) {
-
-						// Define o elo inicial como 0 em todos os modos
-						int eloSolo = 0;
-						int eloDuplas = 0;
-						int elo1v1 = 0;
-						int elo4v4 = 0;
-						int elo2v2CM = 0;
-						int eloGeral = 0;
-						int mvpCount = 0;
-
-						// Se o jogador já tiver um elo registrado, mantém o elo atual
-						if (playerData.contains(uuidString + ".rankedsolo")) {
-							eloSolo = playerData.getInt(uuidString + ".rankedsolo");
-						}
-						if (playerData.contains(uuidString + ".rankedduplas")) {
-							eloDuplas = playerData.getInt(uuidString + ".rankedduplas");
-						}
-						if (playerData.contains(uuidString + ".ranked1v1")) {
-							elo1v1 = playerData.getInt(uuidString + ".ranked1v1");
-						}
-						if (playerData.contains(uuidString + ".ranked4s")) {
-							elo4v4 = playerData.getInt(uuidString + ".ranked4s");
-						}
-						if (playerData.contains(uuidString + ".ranked2v2cm")) {
-							elo2v2CM = playerData.getInt(uuidString + ".ranked2v2cm");
-						}
-						if (playerData.contains(uuidString + ".rankedgeral")) {
-							eloGeral = playerData.getInt(uuidString + ".rankedgeral");
-						}
-						if (playerData.contains(uuidString + ".mvp")) {
-							mvpCount = playerData.getInt(uuidString + ".mvp");
-						}
-
-						config.set(uuidString + ".rankedgeral", eloGeral);
-						config.set(uuidString + ".rankedsolo", eloSolo);
-						config.set(uuidString + ".rankedduplas", eloDuplas);
-						config.set(uuidString + ".ranked1v1", elo1v1);
-						config.set(uuidString + ".ranked4s", elo4v4);
-						config.set(uuidString + ".ranked2v2cm", elo2v2CM);
-						config.set(uuidString + ".mvp", mvpCount);
-					}
-					config.save(playerDataFile);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+		Bukkit.getScheduler().runTaskAsynchronously(Bukkit.getPluginManager().getPlugin("BedWars2023"), () -> {
+			File dataFolder = new File(Bukkit.getPluginManager().getPlugin("BedWars2023").getDataFolder(), "Addons/Ranked");
+			if (!dataFolder.exists()) {
+				dataFolder.mkdirs();
 			}
-		}.runTaskAsynchronously(Bukkit.getPluginManager().getPlugin ("BedWars2023"));
+			File playerDataFile = new File(dataFolder, "playersElo.yml");
+			try {
+				YamlConfiguration config = new YamlConfiguration();
+				for (String uuidString : playerData.getKeys(false)) {
+					int eloSolo = playerData.getInt(uuidString + ".rankedsolo", 0);
+					int eloDuplas = playerData.getInt(uuidString + ".rankedduplas", 0);
+					int elo1v1 = playerData.getInt(uuidString + ".ranked1v1", 0);
+					int elo4v4 = playerData.getInt(uuidString + ".ranked4s", 0);
+					int elo2v2CM = playerData.getInt(uuidString + ".ranked2v2cm", 0);
+					int eloGeral = playerData.getInt(uuidString + ".rankedgeral", 0);
+					int mvpCount = playerData.getInt(uuidString + ".mvp", 0);
+
+					config.set(uuidString + ".rankedgeral", eloGeral);
+					config.set(uuidString + ".rankedsolo", eloSolo);
+					config.set(uuidString + ".rankedduplas", eloDuplas);
+					config.set(uuidString + ".ranked1v1", elo1v1);
+					config.set(uuidString + ".ranked4s", elo4v4);
+					config.set(uuidString + ".ranked2v2cm", elo2v2CM);
+					config.set(uuidString + ".mvp", mvpCount);
+				}
+				config.save(playerDataFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 	public FileConfiguration getPlayerData() {

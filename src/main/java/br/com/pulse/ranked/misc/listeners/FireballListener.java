@@ -174,7 +174,7 @@ public class FireballListener implements Listener {
             }
 
             UUID playerUUID = player.getUniqueId();
-            long respawnInvulnerability = BedWarsTeam.reSpawnInvulnerability.getOrDefault(playerUUID, 0L);
+            long respawnInvulnerability = BedWarsTeam.reSpawnInvulnerability.getOrDefault (playerUUID, 0L);
 
             if (respawnInvulnerability > System.currentTimeMillis()) {
                 continue;
@@ -276,7 +276,7 @@ public class FireballListener implements Listener {
 
         // Reduz o dano de queda pela metade
         if (e.getCause() == EntityDamageEvent.DamageCause.FALL) {
-            e.setDamage(e.getDamage() / 2);
+            e.setDamage(e.getDamage() / 3); // Reduz o dano de queda pela metade
         }
     }
 }

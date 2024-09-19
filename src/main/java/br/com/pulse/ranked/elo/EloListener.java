@@ -133,11 +133,7 @@ public class EloListener implements Listener {
         ICategoryContent categoryContent = e.getCategoryContent();
         String identifier = categoryContent.getIdentifier();
         // Permanently blocked items
-        boolean b = group.equalsIgnoreCase("RankedSolo")
-                || group.equalsIgnoreCase("RankedDuplas")
-                || group.equalsIgnoreCase("Ranked1v1")
-                || group.equalsIgnoreCase("Ranked4s")
-                || group.equalsIgnoreCase("Ranked2v2CM");
+        boolean b = group.startsWith("Ranked");
         if (b) {
             if (identifier.equals("ranged-category.category-content.bow1") ||
                     identifier.equals("ranged-category.category-content.arrow") ||
